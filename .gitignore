@@ -5,8 +5,8 @@ Cargo.lock
 
 # docx2tex Generated Outputs
 # Ignore everything inside out/ directories but keep the .gitkeep files
-out/*
-!out/.gitkeep
+latex/out/*
+!latex/out/.gitkeep
 *.pdf
 
 # LaTeX Intermediate Files
