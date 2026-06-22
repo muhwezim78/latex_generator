@@ -40,8 +40,8 @@ docker build -t docx2tex .
 # Convert a Word document to LaTeX
 docx2tex convert thesis.docx
 
-# Convert with a specific template and output directory
-docx2tex convert thesis.docx --template thesis --output ./output
+# Convert with a specific output directory
+docx2tex convert thesis.docx --output ./out
 
 # Convert and compile straight to PDF
 docx2tex convert paper.docx --template ieee --output ./out --compile-pdf
@@ -63,7 +63,7 @@ docx2tex convert <INPUT> [OPTIONS]
 | Argument | Type | Default | Description |
 |---|---|---|---|
 | `<INPUT>` | path | *(required)* | Path to the `.docx` file |
-| `--output <DIR>` | path | same dir as input | Directory to write output files into |
+| `--output <DIR>` | path | same dir as input | Directory to write output files into. **WARNING**: This must be a directory path (e.g. `./out`), not a file path (e.g. `./out.tex`). |
 | `--template <NAME>` | enum | `default` | LaTeX template preset (see below) |
 | `--compile-pdf` | flag | off | Compile the `.tex` to PDF after conversion |
 

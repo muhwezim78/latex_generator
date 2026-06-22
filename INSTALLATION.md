@@ -62,7 +62,7 @@ With Rust and your LaTeX compiler installed, you are ready to build the `docx2te
 
 1. Clone the repository (if you haven't already):
    ```powershell
-   git clone https://github.com/your-org/latex_generator
+   git clone https://github.com/muhwezim78/latex_generator
    cd latex_generator/latex
    ```
 2. Build the optimized release binary:
@@ -83,8 +83,14 @@ To test that everything is working flawlessly, run the conversion on a sample Wo
 # Add the binary to your current session's PATH for convenience
 $env:PATH += ";${PWD}\target\release"
 
-# Run the tool!
-docx2tex convert "C:\path\to\your\document.docx" --template default --output ./out --compile-pdf
+# Run the tool! (Note: the --output must be a directory, not a file)
+docx2tex convert "C:\path\to\your\document.docx" --template default --output ./out
+
+# Compile with tectonic
+tectonic ./out/document.tex
+
+# Alternatively, if developing without a release build:
+cargo run --release -- convert "C:\path\to\your\document.docx" -o ./out
 ```
 
 If successful, you will see `document.tex` and `document.pdf` instantly appear in your `./out` directory!
