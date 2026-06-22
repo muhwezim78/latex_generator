@@ -1,0 +1,15 @@
+[package]
+name = "latex"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "docx2tex"
+path = "src/main.rs"
+
+[dependencies]
+zip       = "2"
+quick-xml = { version = "0.37", features = [] }
+clap      = { version = "4", features = ["derive"] }
+anyhow    = "1"
+thiserror = "2"

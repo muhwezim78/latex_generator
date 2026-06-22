@@ -1,0 +1,36 @@
+# Rust & Cargo
+/latex/target/
+target/
+Cargo.lock
+
+# docx2tex Generated Outputs
+# Ignore everything inside out/ directories but keep the .gitkeep files
+out/*
+!out/.gitkeep
+*.pdf
+
+# LaTeX Intermediate Files
+# (In case the user runs pdflatex directly outside of the tool)
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+
+# Temporary & OS Files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.tmp
+
+# IDEs
+.idea/
+.vscode/
