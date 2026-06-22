@@ -18,6 +18,8 @@ use zip::ZipArchive;
 
 use crate::models::{Cell, DocError, Document, Element, Run};
 
+use crate::services::normalizer;
+
 // ── Public entry point ────────────────────────────────────────────────────────
 
 /// Parse `docx_path` into a `Document` and copy media into `output_dir/media/`.
@@ -38,7 +40,11 @@ pub fn parse(docx_path: &Path, output_dir: &Path) -> Result<Document, DocError> 
 
     // Read and parse the main document body.
     let xml = read_entry(&mut archive, "word/document.xml")?;
-    let doc = parse_document_xml(&xml, &style_map, &rel_map)?;
+    let mut doc = parse_document_xml(&xml, &style_map, &rel_map)?;
+
+    // Run AST normalisation passes (dedup page breaks, heading promotion, TOC
+    // detection, bullet promotion).
+    doc.elements = normalizer::normalize(doc.elements);
 
     Ok(doc)
 }
@@ -365,6 +371,11 @@ fn parse_document_xml(
                             if local_name(&attr.key) == "type" && &*String::from_utf8_lossy(&attr.value) == "page" {
                                 elements.push(Element::PageBreak);
                             }
+                        }
+                    }
+                    "tab" => {
+                        if in_run {
+                            current_run.text.push('\t');
                         }
                     }
                     "b" => {

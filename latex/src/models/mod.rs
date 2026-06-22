@@ -13,7 +13,7 @@ pub struct Document {
 
 // ── Block-level elements ──────────────────────────────────────────────────────
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Element {
     /// A heading (level 1–4 maps to \section … \subsubsubsection).
     Heading { level: u8, runs: Vec<Run> },
@@ -35,6 +35,8 @@ pub enum Element {
     },
     /// An explicit page break.
     PageBreak,
+    /// An auto-generated (or detected) table of contents.
+    TocBlock,
 }
 
 // ── Inline runs ───────────────────────────────────────────────────────────────
@@ -55,7 +57,7 @@ pub struct Run {
 
 // ── Table cell ────────────────────────────────────────────────────────────────
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Cell {
     pub runs: Vec<Run>,
 }

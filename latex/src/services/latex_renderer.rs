@@ -48,10 +48,13 @@ fn emit_preamble(out: &mut String, doc: &Document, template: &Template) {
             out.push_str("\\usepackage[margin=2.5cm]{geometry}\n");
             out.push_str("\\usepackage{graphicx}\n");
             out.push_str("\\usepackage{booktabs}\n");
+            out.push_str("\\usepackage[hyphens]{url}\n");
             out.push_str("\\usepackage{hyperref}\n");
             out.push_str("\\usepackage{parskip}\n");
             out.push_str("\\usepackage{microtype}\n");
             out.push_str("\\usepackage[normalem]{ulem}\n");
+            out.push_str("\\usepackage{textcomp}\n");
+            out.push_str("\\usepackage{amssymb}\n");
         }
         Template::Ieee => {
             out.push_str("\\documentclass[conference]{IEEEtran}\n");
@@ -60,9 +63,13 @@ fn emit_preamble(out: &mut String, doc: &Document, template: &Template) {
             out.push_str("\\usepackage{graphicx}\n");
             out.push_str("\\usepackage{amsmath}\n");
             out.push_str("\\usepackage{amssymb}\n");
+            out.push_str("\\usepackage{amssymb}\n");
             out.push_str("\\usepackage{cite}\n");
+            out.push_str("\\usepackage[hyphens]{url}\n");
             out.push_str("\\usepackage{hyperref}\n");
             out.push_str("\\usepackage[normalem]{ulem}\n");
+            out.push_str("\\usepackage{textcomp}\n");
+            out.push_str("\\usepackage{amssymb}\n");
         }
         Template::Thesis => {
             out.push_str("\\documentclass[12pt,a4paper,oneside]{report}\n");
@@ -71,12 +78,15 @@ fn emit_preamble(out: &mut String, doc: &Document, template: &Template) {
             out.push_str("\\usepackage[margin=3cm]{geometry}\n");
             out.push_str("\\usepackage{graphicx}\n");
             out.push_str("\\usepackage{booktabs}\n");
+            out.push_str("\\usepackage[hyphens]{url}\n");
             out.push_str("\\usepackage{hyperref}\n");
             out.push_str("\\usepackage{natbib}\n");
             out.push_str("\\usepackage{fancyhdr}\n");
             out.push_str("\\usepackage{microtype}\n");
             out.push_str("\\pagestyle{fancy}\n");
             out.push_str("\\usepackage[normalem]{ulem}\n");
+            out.push_str("\\usepackage{textcomp}\n");
+            out.push_str("\\usepackage{amssymb}\n");
         }
     }
     out.push('\n');
@@ -87,6 +97,8 @@ fn emit_preamble(out: &mut String, doc: &Document, template: &Template) {
         .as_deref()
         .map(escaper::escape)
         .unwrap_or_else(|| "Untitled".to_owned());
+    // Global line-break relaxation — prevents overfull \hbox on long words/URLs
+    out.push_str("\\setlength{\\emergencystretch}{3em}\n");
     out.push_str(&format!("\\title{{{title}}}\n"));
     out.push_str("\\author{}\n");
     out.push_str("\\date{\\today}\n");
@@ -148,6 +160,11 @@ fn emit_element(out: &mut String, element: &Element, template: &Template) {
         Element::PageBreak => {
             out.push_str("\\clearpage\n");
         }
+
+        Element::TocBlock => {
+            out.push_str("\\tableofcontents\n");
+            out.push_str("\\clearpage\n");
+        }
     }
 }
 
@@ -163,15 +180,64 @@ fn max_text_width_cm(template: &Template) -> f64 {
 
 // ── Table rendering ───────────────────────────────────────────────────────────
 
+/// Compute proportional column widths based on average cell text length.
+///
+/// Short label columns (e.g. "S/N") get less space; long content columns
+/// (e.g. "Purpose" / "Remarks") get more.  Each width is clamped to
+/// [1.5cm, 8.0cm] and the total is normalised to `total_width`.
+fn compute_col_widths(
+    rows: &[Vec<crate::models::Cell>],
+    col_count: usize,
+    total_width: f64,
+) -> Vec<f64> {
+    // Sum of character lengths per column across all rows
+    let mut col_sums = vec![0usize; col_count];
+    let mut col_counts = vec![0usize; col_count];
+
+    for row in rows {
+        for (i, cell) in row.iter().enumerate().take(col_count) {
+            let len: usize = cell.runs.iter().map(|r| r.text.len()).sum();
+            col_sums[i] += len;
+            col_counts[i] += 1;
+        }
+    }
+
+    // Average text length per column (at least 1 to avoid div-by-zero)
+    let avgs: Vec<f64> = col_sums
+        .iter()
+        .zip(&col_counts)
+        .map(|(&s, &n)| if n > 0 { s as f64 / n as f64 } else { 1.0 }.max(1.0))
+        .collect();
+
+    let total_avg: f64 = avgs.iter().sum();
+
+    // Proportional widths clamped to [1.5, 8.0]
+    let raw: Vec<f64> = avgs
+        .iter()
+        .map(|&a| ((a / total_avg) * total_width).clamp(1.5, 8.0))
+        .collect();
+
+    // Re-scale so columns sum exactly to total_width
+    let raw_sum: f64 = raw.iter().sum();
+    let scale = total_width / raw_sum;
+    raw.into_iter().map(|w| (w * scale).clamp(1.5, 8.0)).collect()
+}
+
 fn emit_table(out: &mut String, rows: &[Vec<crate::models::Cell>], template: &Template) {
     if rows.is_empty() {
         return;
     }
     let col_count = rows.iter().map(|r| r.len()).max().unwrap_or(1);
-    let col_spec = "l ".repeat(col_count);
+    let text_width = max_text_width_cm(template);
+    let col_widths = compute_col_widths(rows, col_count, text_width);
+    let col_spec: String = col_widths
+        .iter()
+        .map(|w| format!("p{{{:.2}cm}} ", w))
+        .collect::<String>();
 
     out.push_str("\\begin{table}[htbp]\n");
     out.push_str("  \\centering\n");
+    out.push_str("  {\\small\n");
     out.push_str(&format!("  \\begin{{tabular}}{{{}}}\n", col_spec.trim()));
 
     let use_booktabs = matches!(template, Template::Default | Template::Thesis);
@@ -210,8 +276,8 @@ fn emit_table(out: &mut String, rows: &[Vec<crate::models::Cell>], template: &Te
     } else {
         out.push_str("    \\hline\n");
     }
-
     out.push_str("  \\end{tabular}\n");
+    out.push_str("  }\n"); // close \small
     out.push_str("\\end{table}\n");
 }
 

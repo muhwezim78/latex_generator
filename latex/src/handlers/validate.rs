@@ -35,6 +35,7 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
     let mut tables = 0u32;
     let mut images = 0u32;
     let mut page_breaks = 0u32;
+    let mut toc_blocks = 0u32;
 
     for el in &doc.elements {
         match el {
@@ -44,6 +45,7 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
             Element::Table { .. }     => tables += 1,
             Element::Image { .. }     => images += 1,
             Element::PageBreak        => page_breaks += 1,
+            Element::TocBlock         => toc_blocks += 1,
         }
     }
 
@@ -58,6 +60,9 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
     println!("  Tables     : {tables}");
     println!("  Images     : {images}");
     println!("  Page breaks: {page_breaks}");
+    if toc_blocks > 0 {
+        println!("  TOC blocks : {toc_blocks}");
+    }
     println!();
 
     // ── Element walkthrough ───────────────────────────────────────────────────
@@ -91,6 +96,9 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
             }
             Element::PageBreak => {
                 println!("  [{idx:>3}] PageBreak");
+            }
+            Element::TocBlock => {
+                println!("  [{idx:>3}] TableOfContents (auto-generated)");
             }
         }
     }
