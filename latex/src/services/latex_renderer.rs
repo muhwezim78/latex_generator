@@ -232,21 +232,15 @@ fn emit_table(out: &mut String, rows: &[Vec<crate::models::Cell>], template: &Te
     let col_widths = compute_col_widths(rows, col_count, text_width);
     let col_spec: String = col_widths
         .iter()
-        .map(|w| format!("p{{{:.2}cm}} ", w))
+        .map(|w| format!("p{{{:.2}cm}}|", w))
         .collect::<String>();
 
     out.push_str("\\begin{table}[htbp]\n");
     out.push_str("  \\centering\n");
     out.push_str("  {\\small\n");
-    out.push_str(&format!("  \\begin{{tabular}}{{{}}}\n", col_spec.trim()));
+    out.push_str(&format!("  \\begin{{tabular}}{{|{}}}\n", col_spec));
 
-    let use_booktabs = matches!(template, Template::Default | Template::Thesis);
-
-    if use_booktabs {
-        out.push_str("    \\toprule\n");
-    } else {
-        out.push_str("    \\hline\n");
-    }
+    out.push_str("    \\hline\n");
 
     for (row_idx, row) in rows.iter().enumerate() {
         out.push_str("    ");
@@ -263,19 +257,11 @@ fn emit_table(out: &mut String, rows: &[Vec<crate::models::Cell>], template: &Te
 
         // Header rule after first row
         if row_idx == 0 {
-            if use_booktabs {
-                out.push_str("    \\midrule\n");
-            } else {
-                out.push_str("    \\hline\n");
-            }
+            out.push_str("    \\hline\n");
         }
     }
 
-    if use_booktabs {
-        out.push_str("    \\bottomrule\n");
-    } else {
-        out.push_str("    \\hline\n");
-    }
+    out.push_str("    \\hline\n");
     out.push_str("  \\end{tabular}\n");
     out.push_str("  }\n"); // close \small
     out.push_str("\\end{table}\n");

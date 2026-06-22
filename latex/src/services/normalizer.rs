@@ -9,6 +9,7 @@
 //!   2. `promote_bold_headings`     – heuristic bold-para → \section
 //!   3. `detect_toc_block`          – manual dot-leader TOC → \tableofcontents
 //!   4. `promote_inline_bullets`    – leading bullet char → \begin{itemize}
+//!   5. `remove_empty_list_items`   – prune empty lines generated from bad word formats
 
 use crate::models::{Element, Run};
 
@@ -20,7 +21,20 @@ pub fn normalize(elements: Vec<Element>) -> Vec<Element> {
     let elements = promote_bold_headings(elements);
     let elements = detect_toc_block(elements);
     let elements = promote_inline_bullets(elements);
+    let elements = remove_empty_list_items(elements);
     elements
+}
+
+// ── Pass 5: Remove empty list items ──────────────────────────────────────────
+
+/// Prune any list items that contain only whitespace/empty runs.
+pub fn remove_empty_list_items(elements: Vec<Element>) -> Vec<Element> {
+    elements.into_iter().map(|mut el| {
+        if let Element::List { ref mut items, .. } = el {
+            items.retain(|runs| !runs.iter().all(|r| r.text.trim().is_empty()));
+        }
+        el
+    }).collect()
 }
 
 // ── Pass 1: Deduplicate consecutive page breaks ───────────────────────────────
@@ -170,28 +184,46 @@ pub fn detect_toc_block(elements: Vec<Element>) -> Vec<Element> {
     let mut out: Vec<Element> = Vec::with_capacity(elements.len());
     let mut i = 0;
     let n = elements.len();
+    let toc_search_limit = if n > 0 { n / 5 } else { 0 }; // First 20% of the document
 
     while i < n {
         if is_toc_header(&elements[i]) {
             out.push(Element::TocBlock);
             i += 1;
             
-            // Skip all elements until we hit a PageBreak or the end
-            while i < n {
-                if matches!(elements[i], Element::PageBreak) {
-                    // We don't skip the page break itself, because TOC in latex 
-                    // handles its own spacing/pages usually, but keeping the page break 
-                    // is safe (or we can skip it too, let's keep it).
+            // Skip immediately following TOC entries, blank paragraphs, and up to 2 PageBreaks
+            let mut page_breaks_seen = 0;
+            while i < n && page_breaks_seen < 3 {
+                if is_toc_entry(&elements[i]) {
+                    i += 1;
+                } else if matches!(elements[i], Element::PageBreak) {
+                    page_breaks_seen += 1;
+                    // We don't skip the page break itself, just consume it so we can keep looking
+                    out.push(take_element(&elements, i));
+                    i += 1;
+                } else if is_blank_paragraph(&elements[i]) {
+                    i += 1;
+                } else {
                     break;
                 }
-                i += 1;
             }
+        } else if i < toc_search_limit && is_toc_entry(&elements[i]) {
+            // Stray TOC entry in the front matter, drop it.
+            i += 1;
         } else {
             out.push(take_element(&elements, i));
             i += 1;
         }
     }
     out
+}
+
+fn is_blank_paragraph(el: &Element) -> bool {
+    if let Element::Paragraph { runs } = el {
+        runs.iter().all(|r| r.text.trim().is_empty())
+    } else {
+        false
+    }
 }
 
 /// Clone an element from the slice (workaround since Element isn't Copy).

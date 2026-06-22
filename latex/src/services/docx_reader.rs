@@ -168,7 +168,7 @@ fn parse_document_xml(
     let mut para_style: Option<String> = None;
 
     // List tracking
-    let mut in_list = false;
+    let mut para_has_numpr = false;
     let list_ordered = false;
     let mut list_level: u8 = 0;
     let mut list_items: Vec<Vec<Run>> = Vec::new();
@@ -215,6 +215,7 @@ fn parse_document_xml(
                     "p" => {
                         para_runs.clear();
                         para_style = None;
+                        para_has_numpr = false;
                     }
                     // ── Paragraph properties ───────────────────────────────
                     "pStyle" => {
@@ -232,7 +233,7 @@ fn parse_document_xml(
                     }
                     // ── Numbered list ──────────────────────────────────────
                     "numPr" => {
-                        in_list = true;
+                        para_has_numpr = true;
                     }
                     "ilvl" => {
                         for attr in e.attributes().flatten() {
@@ -375,7 +376,7 @@ fn parse_document_xml(
                     }
                     "tab" => {
                         if in_run {
-                            current_run.text.push('\t');
+                            current_run.text.push(' ');
                         }
                     }
                     "b" => {
@@ -526,6 +527,19 @@ fn parse_document_xml(
                         // Determine heading level
                         let heading_level = style.as_deref().and_then(heading_level_for_style);
 
+                        // If it's a heading, it breaks any list.
+                        // If it's NOT a heading, and it DOES NOT have numPr, it breaks any list.
+                        let is_list_item = para_has_numpr && heading_level.is_none();
+
+                        if !is_list_item && !list_items.is_empty() {
+                            flush_list(
+                                &mut elements,
+                                &mut list_items,
+                                list_ordered,
+                                list_level,
+                            );
+                        }
+
                         if let Some(level) = heading_level {
                             // Set document title from first H1
                             if level == 1 && doc.title.is_none() {
@@ -535,17 +549,8 @@ fn parse_document_xml(
                                     doc.title = Some(title_text);
                                 }
                             }
-                            if in_list {
-                                flush_list(
-                                    &mut elements,
-                                    &mut list_items,
-                                    list_ordered,
-                                    list_level,
-                                );
-                                in_list = false;
-                            }
                             elements.push(Element::Heading { level, runs });
-                        } else if in_list {
+                        } else if is_list_item {
                             list_items.push(runs);
                         } else if in_cell {
                             if !runs.is_empty() {
@@ -556,13 +561,23 @@ fn parse_document_xml(
                             }
                         } else {
                             if !runs.is_empty() || !elements.is_empty() {
-                                elements.push(Element::Paragraph { runs });
+                                let mut text_str: String = runs.iter().map(|r| r.text.as_str()).collect();
+                                let upper = text_str.trim().to_uppercase();
+                                if doc.title.is_none() && upper.starts_with("TITLE:") {
+                                    // Extract title and do not emit as paragraph
+                                    let mut title_text = text_str.trim()[6..].trim().to_string();
+                                    if !title_text.is_empty() {
+                                        doc.title = Some(title_text);
+                                    }
+                                } else {
+                                    elements.push(Element::Paragraph { runs });
+                                }
                             }
                         }
                     }
                     // ── Finish numPr (list item) ───────────────────────────
                     "numPr" => {
-                        // keep in_list true; flushed when a non-list para appears
+                        // handled at paragraph start
                     }
                     _ => {}
                 }
@@ -577,7 +592,7 @@ fn parse_document_xml(
     }
 
     // Flush any trailing list
-    if in_list && !list_items.is_empty() {
+    if !list_items.is_empty() {
         flush_list(&mut elements, &mut list_items, list_ordered, list_level);
     }
 
@@ -591,13 +606,13 @@ fn parse_document_xml(
 fn heading_level_for_style(name: &str) -> Option<u8> {
     let lower = name.to_lowercase();
     // Match "heading 1" .. "heading 4" and common variants.
-    if lower.contains("heading 1") || lower == "h1" || lower == "title" {
+    if lower.contains("heading 1") || lower.contains("heading1") || lower == "h1" || lower == "title" {
         Some(1)
-    } else if lower.contains("heading 2") || lower == "h2" || lower == "subtitle" {
+    } else if lower.contains("heading 2") || lower.contains("heading2") || lower == "h2" || lower == "subtitle" {
         Some(2)
-    } else if lower.contains("heading 3") || lower == "h3" {
+    } else if lower.contains("heading 3") || lower.contains("heading3") || lower == "h3" {
         Some(3)
-    } else if lower.contains("heading 4") || lower == "h4" {
+    } else if lower.contains("heading 4") || lower.contains("heading4") || lower == "h4" {
         Some(4)
     } else {
         None
