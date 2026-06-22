@@ -19,7 +19,7 @@ By generating a PDF via LaTeX through **docx2tex**, you gain several "superpower
 ### From source
 
 ```bash
-git clone https://github.com/your-org/latex_generator
+git clone git@github.com:muhwezim78/latex_generator.git
 cd latex_generator/latex
 cargo build --release
 ```
