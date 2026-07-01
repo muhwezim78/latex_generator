@@ -20,13 +20,13 @@ pub enum Element {
     /// A body paragraph.
     Paragraph { runs: Vec<Run> },
     /// A bulleted or numbered list.
+    /// Each item carries its own indent level so nested lists can be rendered.
     List {
         ordered: bool,
-        level: u8,
-        items: Vec<Vec<Run>>,
+        items: Vec<(u8, Vec<Run>)>,
     },
     /// A table.
-    Table { rows: Vec<Vec<Cell>> },
+    Table { rows: Vec<Vec<Cell>>, caption: Option<String> },
     /// An image already copied to <output>/media/.
     Image {
         path: String,
@@ -37,6 +37,10 @@ pub enum Element {
     PageBreak,
     /// An auto-generated (or detected) table of contents.
     TocBlock,
+    /// An auto-generated list of figures (replaces a manual dot-leader LOF).
+    LofBlock,
+    /// An auto-generated list of tables (replaces a manual dot-leader LOT).
+    LotBlock,
 }
 
 // ── Inline runs ───────────────────────────────────────────────────────────────

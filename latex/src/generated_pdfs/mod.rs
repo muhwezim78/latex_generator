@@ -50,9 +50,10 @@ fn run_pdflatex(tex_path: &Path, output_dir: &Path) -> anyhow::Result<PathBuf> {
             .with_context(|| format!("pdflatex pass {pass} failed to start"))?;
 
         if !status.success() {
+            print_log_tail(tex_path, output_dir);
             bail!(
                 "pdflatex pass {pass} failed (exit code {:?}).\n\
-                 Check the .log file in {} for details.",
+                 See compiler output above, or check the .log file in {}.",
                 status.code(),
                 output_dir.display()
             );
@@ -60,6 +61,24 @@ fn run_pdflatex(tex_path: &Path, output_dir: &Path) -> anyhow::Result<PathBuf> {
     }
 
     pdf_output_path(tex_path, output_dir)
+}
+
+/// Print the last 30 lines of the pdflatex `.log` file to stderr on failure.
+fn print_log_tail(tex_path: &Path, output_dir: &Path) {
+    let stem = match tex_path.file_stem() {
+        Some(s) => s.to_string_lossy().into_owned(),
+        None => return,
+    };
+    let log_path = output_dir.join(format!("{stem}.log"));
+    if let Ok(contents) = std::fs::read_to_string(&log_path) {
+        let lines: Vec<&str> = contents.lines().collect();
+        let start = lines.len().saturating_sub(30);
+        eprintln!("\n--- pdflatex log (last {} lines) ---", lines.len() - start);
+        for line in &lines[start..] {
+            eprintln!("{line}");
+        }
+        eprintln!("--- end of log ---\n");
+    }
 }
 
 fn run_tectonic(tex_path: &Path, output_dir: &Path) -> anyhow::Result<PathBuf> {

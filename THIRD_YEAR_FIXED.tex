@@ -1,0 +1,1219 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\pagestyle{fancy}
+\usepackage[normalem]{ulem}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{setspace}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\emergencystretch}{5em}
+\sloppy
+
+\renewcommand{\maketitle}{}
+
+\begin{document}
+
+% ============================================================
+%  TITLE PAGE
+% ============================================================
+\begin{titlepage}
+  \centering
+
+  {\large \textbf{KYAMBOGO UNIVERSITY}}\\[0.2cm]
+  {\normalsize \textbf{FACULTY OF ENGINEERING}}\\[0.1cm]
+  {\normalsize \textbf{DEPARTMENT OF ELECTRICAL AND ELECTRONICS ENGINEERING}}\\[0.3cm]
+  {\normalsize BACHELOR OF ENGINEERING IN TELECOMMUNICATIONS ENGINEERING}\\[1.5cm]
+
+  \rule{\linewidth}{0.5pt}\\[0.4cm]
+  {\Large \textbf{A DESIGN OF AN ENHANCED SMART INTRUSION DETECTION SYSTEM}}\\[0.4cm]
+  \rule{\linewidth}{0.5pt}\\[1.5cm]
+
+  {\normalsize \textit{A report submitted to the Electrical and Electronics Engineering Department,\\
+  Kyambogo University, in fulfillment of the requirements for the degree of\\
+  Bachelor of Engineering in Telecommunications Engineering}}\\[1.5cm]
+
+  {\normalsize \textbf{By}}\\[0.3cm]
+  {\Large \textbf{MUHWEZI MARK}}\\[0.2cm]
+  {\normalsize \textbf{Registration Number: 22/U/ETD/0996/GV}}\\[1cm]
+
+  {\normalsize Supervisor: \textbf{Dr. Mugerwa Dickson}}\\[1.5cm]
+
+  {\normalsize June 2026}
+\end{titlepage}
+
+% ============================================================
+%  DECLARATION
+% ============================================================
+\clearpage
+\chapter*{Declaration of Authorship}
+\addcontentsline{toc}{chapter}{Declaration of Authorship}
+
+I, MUHWEZI MARK, hereby declare that this Final Year Project Report titled ``A Design of an Enhanced Smart Intrusion Detection System'' is an original and authentic work that has been carried out by me under the guidance and supervision of Dr. Mugerwa Dickson as part of my course requirements for the Bachelor of Engineering in Telecommunications Engineering of Kyambogo University.
+
+I confirm that this report has not been submitted previously for any other academic award or qualification. All sources of information used in this report have been duly acknowledged through appropriate citations and references.
+
+I also confirm that the work presented in this report is free from any plagiarism, and any contribution made by others to this work has been duly acknowledged.
+
+I acknowledge that the copyright of this report belongs to the academic institution and that no part of this report may be reproduced or transmitted in any form or by any means, electronic, mechanical, photocopying, recording or otherwise, without the prior written permission of the academic institution.
+
+\vspace{2cm}
+\noindent Signed: \underline{\hspace{5cm}}
+
+\vspace{1cm}
+\noindent Date: 24th June 2026
+
+% ============================================================
+%  APPROVAL
+% ============================================================
+\clearpage
+\chapter*{Approval}
+\addcontentsline{toc}{chapter}{Approval}
+
+This final year project entitled ``A Design of an Enhanced Smart Intrusion Detection System'' has been done under my supervision and has been submitted to the Faculty of Engineering of Kyambogo University for examination with my approval.
+
+\vspace{1.5cm}
+\noindent Supervisor: \textbf{Dr. Mugerwa Dickson}
+
+\vspace{1.5cm}
+\noindent Sign: \underline{\hspace{5cm}}
+
+\vspace{1cm}
+\noindent Date: \underline{\hspace{5cm}}
+
+% ============================================================
+%  DEDICATION
+% ============================================================
+\clearpage
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+
+I dedicate this work to my beloved family, whose unwavering support, encouragement, and sacrifices have been the foundation of our academic journey. To my family, for instilling in me the value of education and perseverance, and to our friends and colleagues, for their motivation and inspiration throughout the course of this project. This work is also dedicated to all students and researchers striving to use technology to create innovative solutions for real-world challenges.
+
+% ============================================================
+%  LIST OF ACRONYMS
+% ============================================================
+\clearpage
+\chapter*{List of Acronyms}
+\addcontentsline{toc}{chapter}{List of Acronyms}
+
+\begin{table}[htbp]
+  \centering
+  \caption{List of Acronyms and Their Meanings}
+  {\small
+  \begin{tabular}{|p{2.79cm}|p{10.00cm}|}
+    \hline
+    \textbf{Acronym} & \textbf{Meaning} \\
+    \hline
+    API    & Application Programming Interface \\
+    AI     & Artificial Intelligence \\
+    AWS    & Amazon Web Services \\
+    CCTV   & Closed Circuit Television \\
+    CSI    & Camera Serial Interface \\
+    CPU    & Central Processing Unit \\
+    DB     & Database \\
+    DBMS   & Database Management System \\
+    Dlib   & Data Library (Machine Learning and Computer Vision Library) \\
+    EC2    & Elastic Compute Cloud \\
+    GIS    & Geographic Information System \\
+    GPIO   & General Purpose Input/Output \\
+    GPS    & Global Positioning System \\
+    GSM    & Global System for Mobile Communication \\
+    IDE    & Integrated Development Environment \\
+    IoT    & Internet of Things \\
+    LBERS  & Location-Based Emergency Response System \\
+    LTE    & Long Term Evolution \\
+    ML     & Machine Learning \\
+    OpenCV & Open Source Computer Vision Library \\
+    PIR    & Passive Infrared \\
+    RAM    & Random Access Memory \\
+    REST   & Representational State Transfer \\
+    SMS    & Short Message Service \\
+    UDP    & User Datagram Protocol \\
+    UI     & User Interface \\
+    URL    & Uniform Resource Locator \\
+    Wi-Fi  & Wireless Fidelity \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+% ============================================================
+%  LIST OF SYMBOLS
+% ============================================================
+\clearpage
+\chapter*{List of Symbols}
+\addcontentsline{toc}{chapter}{List of Symbols}
+
+\begin{table}[htbp]
+  \centering
+  \caption{List of Symbols and Descriptions}
+  {\small
+  \begin{tabular}{|p{2.50cm}|p{8.00cm}|p{3.21cm}|}
+    \hline
+    \textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\
+    \hline
+    $A(t)$        & Alert activation status                          & -- \\
+    $D(t)$        & Motion detection status                          & -- \\
+    $U(t)$        & User authorization status                        & -- \\
+    $I(t)$        & Infrared radiation intensity at time $t$         & -- \\
+    $T_m$         & Motion detection threshold                       & -- \\
+    $F$           & Facial feature vector                            & -- \\
+    $f_i$         & Extracted facial feature                         & -- \\
+    $g_i$         & Stored facial feature                            & -- \\
+    $d$           & Similarity distance between facial features      & -- \\
+    $T_f$         & Facial recognition threshold                     & -- \\
+    $T_s$         & Sensor detection time                            & Seconds (s) \\
+    $T_p$         & Processing time                                  & Seconds (s) \\
+    $T_t$         & Transmission time                                & Seconds (s) \\
+    $T_r$         & Response generation time                         & Seconds (s) \\
+    $T_{total}$   & Total system response time                       & Seconds (s) \\
+    $N_d$         & Number of successfully delivered SMS messages    & -- \\
+    $N_s$         & Number of sent SMS messages                      & -- \\
+    SDR           & SMS Delivery Rate                                & Percentage (\%) \\
+    $E_d$         & Number of delivered emails                       & -- \\
+    $E_s$         & Number of sent emails                            & -- \\
+    $P_d$         & Email delivery probability                       & Percentage (\%) \\
+    $R$           & Radius of the Earth                              & km \\
+    $\varphi$     & Latitude                                         & Degrees \\
+    $\lambda$     & Longitude                                        & Degrees \\
+    $PS_{nearest}$ & Selected nearest police station                  & -- \\
+    $d_i$         & Distance to police station $i$                   & km \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+\clearpage
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+The increasing rate of unauthorized access and security breaches has created a need for intelligent security systems capable of detecting, identifying, and responding to intrusion events effectively. Conventional security systems mainly rely on motion detection and local alarms, which often result in delayed responses, high false alarm rates, and limited monitoring capabilities when property owners are unavailable. This project presents the design and development of an Enhanced Smart Intrusion Detection System that integrates Internet of Things (IoT), facial recognition, cloud computing, and automated emergency response technologies to improve security monitoring.
+
+The developed system utilized a Raspberry Pi 4 as the central processing unit, interfaced with a Passive Infrared (PIR) sensor, Raspberry Pi camera module, relay module, and buzzer for intrusion detection and local alarm activation. Upon detecting movement, the system captured facial images and processed them using Dlib-based facial recognition algorithms to classify individuals as authorized or unauthorized. Unauthorized individuals triggered an intelligent alert mechanism that transmitted notifications through SMS and email platforms while storing incident information on a cloud-hosted monitoring platform. Furthermore, the system incorporated GPS-based emergency escalation by identifying and forwarding unresolved intrusion alerts to the nearest police station.
+
+The developed prototype was implemented using a Python backend, OpenCV image processing libraries, a React-based web dashboard, PostgreSQL database, and Amazon EC2 cloud infrastructure. System evaluation involved controlled experiments to assess motion detection performance, facial recognition accuracy, notification reliability, and response mechanisms. The system achieved a motion detection success rate of 98\%, facial recognition accuracy of 96\%, SMS delivery success rate of 96.7\%, and email delivery success rate of 100\%. The results demonstrated that the proposed system successfully combined intelligent identification, remote monitoring, and automated emergency response capabilities, providing a more reliable and scalable alternative to conventional intrusion detection approaches.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} Internet of Things, Facial Recognition, Smart Security System, Intrusion Detection, Cloud Monitoring, Raspberry Pi, Automated Emergency Response.
+
+% ============================================================
+%  ACKNOWLEDGEMENTS
+% ============================================================
+\clearpage
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+First and foremost, we thank the Almighty God for granting us the strength, wisdom, and perseverance to successfully undertake and complete this project.
+
+We are deeply grateful to our supervisor, Dr. Mugerwa Dickson, for his invaluable guidance, constructive feedback, and continuous support throughout the research and simulation process. His expertise provided the direction that shaped this work into its present form.
+
+We also extend our sincere appreciation to the staff and colleagues of Kyambogo University, Department of Electrical and Electronics Engineering, for providing a conducive learning environment and for their encouragement during this academic journey.
+
+Special thanks go to our classmates and friends who contributed through discussions, suggestions, and moral support. Finally, we acknowledge our family for their unconditional love, patience, and encouragement, which have always been a source of strength and inspiration to us.
+
+\vspace{1.5cm}
+\noindent\textbf{MUHWEZI MARK}\\
+June 2026
+
+% ============================================================
+%  FRONT MATTER LISTS AND TOC
+% ============================================================
+\clearpage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+\clearpage
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\tableofcontents
+
+% ============================================================
+%  CHAPTER 1: INTRODUCTION
+% ============================================================
+\clearpage
+\chapter{Introduction}
+
+\section{Background}
+
+Security has remained one of the most fundamental requirements for individuals, organizations, and governments throughout human history. As urbanization, population growth, and technological advancement continue to reshape modern societies, the need for reliable and intelligent security systems has become increasingly important. Traditional security approaches such as physical guards, locks, fences, and conventional alarm systems have played a significant role in protecting lives and property. However, these approaches are increasingly facing limitations due to delayed response times, human error, limited monitoring capabilities, and inability to distinguish between legitimate users and potential intruders~\cite{ref1,ref2}.
+
+The rapid growth of the Internet of Things (IoT), cloud computing, artificial intelligence, and embedded systems has transformed the security industry by enabling the development of intelligent surveillance and intrusion detection solutions. Modern smart security systems are capable of monitoring environments in real time, collecting and processing data from multiple sensors, identifying abnormal activities, and automatically notifying responsible authorities when security threats occur~\cite{ref3,ref4}.
+
+Intrusion Detection Systems (IDSs) have emerged as one of the most important technologies in modern security infrastructure. An intrusion detection system is designed to identify unauthorized access, suspicious activities, or security breaches within a protected environment and initiate appropriate responses. Early intrusion detection systems primarily relied on simple motion sensors and alarm mechanisms. Although these systems provided a basic level of protection, they often suffered from high false alarm rates because they could not differentiate between authorized individuals and actual intruders~\cite{ref5,ref6}.
+
+Recent advances in machine learning and computer vision have enabled the integration of facial recognition technologies into intrusion detection systems. Facial recognition systems utilize image processing and pattern recognition techniques to identify individuals by analyzing unique facial features and comparing them with previously stored facial templates~\cite{ref7,ref8}.
+
+According to recent studies, the global smart home security market has experienced substantial growth over the past five years. Reports indicate that the global smart security market exceeded USD 50 billion in 2024 and is expected to continue growing due to increasing concerns regarding burglary, vandalism, unauthorized access, and other security-related incidents~\cite{ref9,ref10}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Global Growth of Smart Security Systems}
+  {\small
+  \begin{tabular}{|p{4.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Year} & \textbf{Estimated Market Size (USD Billion)} \\
+    \hline
+    2020 & 28 \\
+    2021 & 33 \\
+    2022 & 39 \\
+    2023 & 45 \\
+    2024 & 52 \\
+    2025 & 59 \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+The widespread use of smart devices and cloud technologies has also enabled the implementation of remote monitoring systems. Property owners can now receive notifications through mobile phones, emails, and web-based dashboards whenever suspicious activities occur~\cite{ref11,ref12}.
+
+Despite these advancements, many existing intrusion detection systems still exhibit several shortcomings. Most commercially available systems focus on detecting motion and generating alerts but do not provide intelligent decision-making mechanisms capable of verifying whether the detected person is authorized or unauthorized~\cite{ref13,ref14}.
+
+In Uganda and many developing countries, burglary, property theft, and unauthorized access remain persistent security challenges. In many cases, security systems are limited to standalone alarms that merely produce audible warnings without ensuring that responsible individuals or authorities are informed in real time~\cite{ref15,ref16}.
+
+To address these challenges, this project proposes the design and development of an Enhanced Smart Intrusion Detection System that combines motion sensing, facial recognition, cloud-based communication, and intelligent escalation mechanisms. The system employs a Raspberry Pi-based architecture integrated with a Passive Infrared (PIR) sensor, Raspberry Pi camera module, buzzer, relay module, Dlib-based facial recognition algorithms, SMS notifications through Africa's Talking, email notifications through Resend Email services, and cloud hosting using an Amazon EC2 Ubuntu environment.
+
+\section{Problem Statement}
+
+Traditional intrusion detection systems generate alerts whenever motion is detected, regardless of whether the individual is authorized or not. This leads to high false alarm rates and fails to provide automated escalation when property owners are unavailable to respond. There is a clear need for an intelligent system that can verify user identity, deliver multi-channel alerts, and automatically escalate unresolved incidents to the appropriate authorities.
+
+\section{Objectives}
+
+\textbf{Main Objective}
+
+To design and develop an Enhanced Smart Intrusion Detection System that integrates facial recognition, cloud communication, and automated emergency escalation to improve security monitoring.
+
+\textbf{Specific Objectives}
+
+\begin{enumerate}
+  \item To integrate a PIR sensor and Raspberry Pi camera module for real-time motion detection and image acquisition.
+  \item To implement Dlib-based facial recognition to classify detected individuals as authorized or unauthorized.
+  \item To develop a multi-channel notification system using SMS (Africa's Talking) and email (Resend) services.
+  \item To implement GPS-based automated escalation to the nearest police station for unattended alerts.
+  \item To develop a cloud-hosted web dashboard for centralized remote monitoring and incident management.
+\end{enumerate}
+
+\section{Scope}
+
+This project focuses on the design and implementation of a prototype Enhanced Smart Intrusion Detection System for indoor residential and commercial security applications. The scope includes hardware assembly, facial recognition software development, cloud deployment, notification integration, and system evaluation. The system is limited to indoor environments under controlled lighting conditions, and facial recognition is restricted to individuals previously registered in the system database.
+
+% ============================================================
+%  CHAPTER 2: LITERATURE REVIEW
+% ============================================================
+\chapter{Literature Review}
+
+\section{Overview of Intrusion Detection Systems}
+
+An Intrusion Detection System (IDS) is a security mechanism designed to monitor activities within a protected environment and identify events that may indicate unauthorized access, malicious activities, or security breaches. Intrusion detection systems have become an essential component of modern security infrastructures due to increasing concerns regarding burglary, trespassing, vandalism, and unauthorized access to restricted facilities~\cite{ref1,ref2}.
+
+The primary objective of an intrusion detection system is to continuously observe the environment, detect suspicious activities, generate alerts, and facilitate timely response to security incidents. Traditional intrusion detection systems relied heavily on simple sensors and alarm mechanisms but suffered from high false alarm rates and lacked the capability to distinguish legitimate users from potential intruders~\cite{ref3}.
+
+The emergence of embedded computing platforms, artificial intelligence, machine learning, cloud computing, and IoT technologies significantly transformed intrusion detection systems. Modern systems integrate multiple sensors, cameras, communication networks, and intelligent decision-making algorithms to provide real-time security monitoring~\cite{ref4,ref5}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Estimated Global Smart Security Market Growth}
+  {\small
+  \begin{tabular}{|p{4.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Year} & \textbf{Market Size (USD Billion)} \\
+    \hline
+    2020 & 28 \\
+    2021 & 33 \\
+    2022 & 39 \\
+    2023 & 45 \\
+    2024 & 52 \\
+    2025 & 59 \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+The effectiveness of an intrusion detection system is commonly evaluated using performance metrics such as detection accuracy, false alarm rate, response time, and reliability.
+
+Detection accuracy is mathematically expressed as:
+
+\begin{equation}
+  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} \times 100
+\end{equation}
+
+Where: $TP$ = True Positives, $TN$ = True Negatives, $FP$ = False Positives, $FN$ = False Negatives.
+
+The false alarm rate is expressed as:
+
+\begin{equation}
+  FAR = \frac{FP}{FP + TN} \times 100
+\end{equation}
+
+False alarms remain one of the most significant challenges affecting conventional intrusion detection systems. Modern intelligent systems combine multiple sensing and verification mechanisms to improve detection accuracy while minimizing false alarms~\cite{ref6,ref7}.
+
+\subsection{Evolution of Intrusion Detection Systems}
+
+The development of intrusion detection systems has evolved significantly over the past several decades. Early security systems were primarily mechanical in nature, relying on physical barriers such as locks, gates, fences, and security personnel. The introduction of electronic alarm systems during the late twentieth century marked a major advancement. The emergence of microcontrollers in the early 2000s enabled programmable security systems capable of transmitting alerts through telephone networks and internet connections.
+
+The integration of IoT technologies further revolutionized intrusion detection by enabling real-time communication between sensors, controllers, cloud servers, and end users~\cite{ref11,ref13}. Recent advancements in artificial intelligence have introduced facial recognition, object detection, and predictive security capabilities~\cite{ref16,ref21}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Evolution of Intrusion Detection Systems}
+  {\small
+  \begin{tabular}{|p{3.50cm}|p{4.00cm}|p{6.50cm}|}
+    \hline
+    \textbf{Generation} & \textbf{Major Technology} & \textbf{Characteristics} \\
+    \hline
+    First Generation  & Mechanical Security       & Locks, gates, guards \\
+    Second Generation & Electronic Alarms         & Motion sensors and sirens \\
+    Third Generation  & Microcontroller Systems   & Programmable alarms and notifications \\
+    Fourth Generation & IoT Security Systems      & Cloud connectivity and remote monitoring \\
+    Fifth Generation  & AI-Enabled Systems        & Facial recognition and intelligent response \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Classification of Intrusion Detection Systems}
+
+Intrusion detection systems are broadly classified as signature-based, anomaly-based, and hybrid systems.
+
+\textbf{Signature-Based Systems} detect threats by comparing observed activities against a database of known intrusion patterns. A signature matching process can be represented as:
+
+\begin{equation}
+  D = \begin{cases} 1, & P = S \\ 0, & P \neq S \end{cases}
+\end{equation}
+
+Where $P$ = Observed pattern, $S$ = Stored signature, $D$ = Detection result.
+
+\textbf{Anomaly-Based Systems} establish a baseline of normal behavior and identify deviations. The anomaly score is expressed as:
+
+\begin{equation}
+  A = |X - \mu|
+\end{equation}
+
+Where $A$ = Anomaly score, $X$ = Observed activity, $\mu$ = Expected normal behavior.
+
+\textbf{Hybrid Systems} combine both approaches to improve detection accuracy and reduce false alarms. The proposed enhanced smart intrusion detection system falls under this category.
+
+\section{Smart Intrusion Detection Technologies}
+
+The rapid advancement of embedded systems, artificial intelligence, wireless communication, and cloud computing has significantly transformed conventional intrusion detection systems into intelligent security platforms capable of autonomous monitoring, decision-making, and response~\cite{ref4,ref9}.
+
+\subsection{Motion Detection Technologies}
+
+Motion detection forms the foundation of most modern intrusion detection systems. Several technologies have been developed:
+
+\textbf{Passive Infrared (PIR) Sensors} detect changes in infrared radiation emitted by objects within their field of view. The output of a PIR sensor is represented as:
+
+\begin{equation}
+  M(t) = \begin{cases} 1, & \Delta IR > T \\ 0, & \Delta IR \leq T \end{cases}
+\end{equation}
+
+Where $M(t)$ = Motion detection output, $\Delta IR$ = Change in infrared radiation, $T$ = Detection threshold.
+
+PIR sensors offer low power consumption, affordable cost, reliable indoor detection, and simple microcontroller integration. However, they cannot identify who caused the motion~\cite{ref14,ref18}.
+
+\textbf{Ultrasonic Motion Sensors} transmit high-frequency sound waves and analyze reflected signals. The distance to an object is calculated as:
+
+\begin{equation}
+  D = \frac{vt}{2}
+\end{equation}
+
+Where $D$ = Distance, $v$ = Speed of sound, $t$ = Echo return time.
+
+\textbf{Microwave Motion Sensors} use the Doppler effect to detect movement. The Doppler frequency shift is:
+
+\begin{equation}
+  f_d = \frac{2vf_c}{c}
+\end{equation}
+
+Where $f_d$ = Doppler frequency shift, $v$ = Velocity of the moving object, $f_c$ = Carrier frequency, $c$ = Speed of light.
+
+Among these technologies, PIR sensors remain the preferred choice for many smart security systems because of their simplicity, affordability, and reliability. Consequently, the proposed system employed a PIR sensor as the primary trigger mechanism.
+
+\subsection{Facial Recognition Technologies}
+
+Facial recognition technology has emerged as one of the most widely adopted biometric identification techniques in modern security systems~\cite{ref7,ref16}. A typical facial recognition system consists of: Face Detection, Face Alignment, Feature Extraction, Face Encoding, and Face Matching.
+
+Feature Extraction generates a 128-dimensional feature vector:
+
+\begin{equation}
+  F = [f_1, f_2, f_3, \ldots, f_{128}]
+\end{equation}
+
+Face matching uses Euclidean distance:
+
+\begin{equation}
+  d = \sqrt{\sum_{i=1}^{128}(x_i - y_i)^2}
+\end{equation}
+
+Where $x_i$ = Stored facial feature, $y_i$ = Detected facial feature, $d$ = Similarity distance.
+
+A user is authorized if:
+
+\begin{equation}
+  d < T_f
+\end{equation}
+
+Where $T_f$ = Recognition threshold.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of Biometric Recognition Technologies}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{2.50cm}|p{2.50cm}|p{4.00cm}|}
+    \hline
+    \textbf{Technology} & \textbf{Accuracy} & \textbf{Cost} & \textbf{User Convenience} \\
+    \hline
+    Fingerprint Recognition & High      & Medium & Medium \\
+    Iris Recognition        & Very High & High   & Low \\
+    Voice Recognition       & Medium    & Low    & High \\
+    Facial Recognition      & High      & Medium & Very High \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Internet of Things in Security Systems}
+
+The Internet of Things (IoT) refers to a network of interconnected physical devices capable of collecting, processing, and exchanging data through communication networks~\cite{ref1,ref19}. A typical IoT-based security architecture consists of four layers: Sensing Layer, Network Layer, Processing Layer, and Application Layer.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Traditional Security Systems versus IoT-Based Security Systems}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.50cm}|p{3.50cm}|}
+    \hline
+    \textbf{Feature} & \textbf{Traditional Systems} & \textbf{IoT-Based Systems} \\
+    \hline
+    Remote Monitoring        & No      & Yes \\
+    Cloud Integration        & No      & Yes \\
+    Real-Time Notifications  & Limited & Yes \\
+    Automated Response       & No      & Yes \\
+    Scalability              & Low     & High \\
+    Data Analytics           & No      & Yes \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{Communication and Alert Mechanisms}
+
+\subsection{SMS Notification Systems}
+
+Short Message Service (SMS) remains one of the most widely used communication mechanisms in security applications due to its simplicity, reliability, and widespread availability~\cite{ref13,ref20}.
+
+The SMS delivery success rate is expressed as:
+
+\begin{equation}
+  SDR = \frac{N_d}{N_s} \times 100
+\end{equation}
+
+Average SMS delivery time is calculated as:
+
+\begin{equation}
+  T_{avg} = \frac{\sum_{i=1}^{n} T_i}{n}
+\end{equation}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Advantages and Limitations of SMS-Based Alerts}
+  {\small
+  \begin{tabular}{|p{6.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Advantages} & \textbf{Limitations} \\
+    \hline
+    Fast delivery            & Network dependency \\
+    Works on basic phones    & Limited message length \\
+    High reliability         & Possible delivery delays \\
+    Wide coverage            & Cost per message \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Email Notification Systems}
+
+Email notification systems provide a more detailed communication mechanism than SMS alerts, supporting longer messages, multimedia content, attachments, and hyperlinks~\cite{ref15,ref24}.
+
+The probability of successful email delivery is represented as:
+
+\begin{equation}
+  P_d = \frac{E_d}{E_s}
+\end{equation}
+
+\subsection{Cloud-Based Security Monitoring Systems}
+
+Cloud computing provides scalable storage, centralized processing, remote accessibility, and real-time monitoring capabilities~\cite{ref19,ref21}. The overall response time of a cloud-based security system is expressed as:
+
+\begin{equation}
+  T_{total} = T_s + T_p + T_t + T_r
+\end{equation}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison Between Traditional and Cloud-Based Monitoring Systems}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{4.00cm}|p{4.00cm}|}
+    \hline
+    \textbf{Feature} & \textbf{Traditional} & \textbf{Cloud-Based} \\
+    \hline
+    Remote Access        & No      & Yes \\
+    Scalability          & Limited & High \\
+    Data Backup          & Manual  & Automatic \\
+    Maintenance          & High    & Low \\
+    Cost                 & High    & Moderate \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{Automated Emergency Response and Escalation Systems}
+
+\subsection{Location-Based Emergency Response Systems}
+
+Location-Based Emergency Response Systems (LBERS) utilize GPS coordinates to identify and contact the nearest emergency service providers. These systems improve response times by automating the routing of alerts based on geographical proximity.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Benefits of Automated Escalation Systems}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{8.00cm}|}
+    \hline
+    \textbf{Benefit} & \textbf{Description} \\
+    \hline
+    Faster Response        & Automated alerts reduce manual coordination delays \\
+    Reduced Human Error    & System-driven escalation minimizes missed notifications \\
+    Continuous Monitoring  & Escalation continues until acknowledgment is received \\
+    Geographic Precision   & Nearest station selected using GPS distance calculation \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{Related Works}
+
+\subsection{Existing Smart Intrusion Detection Systems}
+
+Kesswani and Agarwal~\cite{ref8} developed SmartGuard, an IoT-based home security system utilizing motion sensors and cloud communication. Their system successfully transmitted intrusion alerts through mobile applications but lacked identity verification capabilities, making it susceptible to false alarms.
+
+Sharma and Gupta~\cite{ref13} proposed an IoT-based security monitoring system integrating wireless sensors and cloud platforms for remote monitoring. While the system improved accessibility, it did not implement facial recognition mechanisms or automated emergency escalation.
+
+Verma and Sharma~\cite{ref14} designed a PIR sensor and GSM-based intrusion detection system capable of transmitting SMS alerts whenever motion was detected. Although the system provided rapid notifications, it could not distinguish authorized individuals from intruders.
+
+Nguyen and Tran~\cite{ref15} implemented an ESP32-based smart security platform integrating cameras and IoT communication services. The system improved remote monitoring but lacked intelligent escalation procedures for unattended incidents.
+
+Hassan et al.~\cite{ref17} developed an intelligent motion detection and alarm system employing image capture techniques. The system demonstrated improved detection performance but did not integrate law enforcement response coordination.
+
+Alruwaili and Alharbi~\cite{ref21} proposed an edge intelligence-based smart home intrusion detection framework. While their approach improved detection accuracy, it focused primarily on local processing and did not address hierarchical emergency response mechanisms.
+
+\subsection{Research Gaps}
+
+The reviewed literature revealed several limitations in existing systems. Many systems relied solely on motion detection, resulting in high false alarm rates~\cite{ref13,ref14}. Although facial recognition improved identification accuracy, few systems integrated emergency response mechanisms~\cite{ref15,ref21}. Most existing solutions terminated after notifying property owners, leaving unattended intrusion incidents unresolved~\cite{ref17,ref25}.
+
+Therefore, there existed a need for an enhanced smart intrusion detection system capable of combining motion detection, facial recognition, cloud-based monitoring, multi-channel notifications, GPS-assisted emergency response, and automated police escalation mechanisms.
+
+% ============================================================
+%  CHAPTER 3: METHODOLOGY
+% ============================================================
+\chapter{Methodology}
+
+\section{System Overview}
+
+This chapter presents the methodology employed in the design and development of the proposed intelligent security monitoring and alert system. The system was designed to provide real-time intrusion detection, facial recognition, remote monitoring, and automated notification services using IoT technologies.
+
+\section{System Architecture}
+
+The proposed system architecture was designed using a layered approach consisting of hardware, software, and cloud infrastructure components. The architecture was divided into three major subsystems: hardware architecture, software architecture, and cloud architecture.
+
+\subsection{Hardware Architecture}
+
+The hardware architecture formed the physical layer of the system and was responsible for environmental sensing, image acquisition, alarm activation, and data processing.
+
+The Raspberry Pi served as the central controller interfacing with all hardware peripherals. A PIR sensor continuously monitored the protected environment for motion. Whenever movement was detected, the Raspberry Pi Camera Module captured images of the detected individual. The captured images were subsequently processed using facial recognition algorithms to determine whether the individual was authorized.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Hardware Components and Their Functions}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{8.00cm}|}
+    \hline
+    \textbf{Component} & \textbf{Function} \\
+    \hline
+    Raspberry Pi 4         & Central processing and control \\
+    PIR Sensor             & Motion detection \\
+    Raspberry Pi Camera    & Image acquisition \\
+    Relay Module           & Alarm switching \\
+    Buzzer                 & Audible alert generation \\
+    Power Supply           & System power provision \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Software Architecture}
+
+The software architecture was designed to coordinate sensing, image processing, alert generation, database management, and user interaction. The backend application was developed using Python due to its extensive support for computer vision, machine learning, and hardware interfacing. OpenCV libraries were employed for image processing and facial recognition operations.
+
+A web-based frontend was developed using React Vite JavaScript to provide a user-friendly dashboard for monitoring security events.
+
+\subsection{Cloud Architecture}
+
+Cloud infrastructure was incorporated to support remote access, data storage, and notification services. The system was deployed on an Amazon EC2 Ubuntu server which hosted the backend APIs, database services, and frontend application.
+
+The architecture also integrated Africa's Talking for SMS notifications and Resend Email for email alerts.
+
+\section{System Components}
+
+\subsection{Raspberry Pi 4}
+
+The Raspberry Pi 4 served as the central processing unit of the system. It coordinated sensor monitoring, image acquisition, facial recognition processing, database communication, and notification management.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Raspberry Pi 4 Specifications}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{8.00cm}|}
+    \hline
+    \textbf{Parameter} & \textbf{Specification} \\
+    \hline
+    Processor           & Quad-Core ARM Cortex-A72 \\
+    RAM                 & 4 GB \\
+    Operating System    & Raspberry Pi OS \\
+    GPIO Pins           & 40 \\
+    Network Connectivity & Ethernet and Wi-Fi \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{PIR Sensor}
+
+The Passive Infrared sensor was used to detect motion within the protected area by detecting changes in infrared radiation emitted by moving objects. When motion was detected, the PIR sensor generated a digital output signal that triggered image acquisition and further security analysis.
+
+\subsection{Raspberry Pi Camera Module}
+
+The Raspberry Pi Camera Module was responsible for capturing images of detected individuals. It supported high-resolution image acquisition and direct interfacing with the Raspberry Pi through the CSI interface.
+
+\subsection{Relay Module and Buzzer}
+
+The relay module acted as an electrically controlled switch used to activate alarm devices whenever unauthorized access was detected. The buzzer provided an audible alarm serving as an immediate deterrent.
+
+\subsection{Africa's Talking SMS Service}
+
+Africa's Talking SMS API was integrated into the system to provide real-time text message notifications whenever unauthorized access occurred.
+
+\subsection{Resend Email Service}
+
+The Resend Email platform was utilized for sending detailed email notifications containing event information and captured images.
+
+\subsection{Amazon EC2 Hosting Environment}
+
+Amazon EC2 provided the cloud infrastructure required for hosting backend services, databases, APIs, and the web dashboard.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Cloud Hosting Specifications}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{8.00cm}|}
+    \hline
+    \textbf{Parameter} & \textbf{Specification} \\
+    \hline
+    Platform            & Amazon EC2 \\
+    Operating System    & Ubuntu Server \\
+    Database            & PostgreSQL \\
+    API Framework       & Python Backend \\
+    Frontend            & React Vite \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{System Operation}
+
+The system operated autonomously by continuously monitoring the PIR sensor output. Once movement was detected, the Raspberry Pi activated the camera module to capture images. The facial recognition module then determined whether the individual matched any authorized user in the database.
+
+If the detected individual was authorized, the event was logged and no further action was taken. If the individual was unauthorized, the system activated the buzzer and transmitted SMS and email notifications to registered administrators. If the property owner failed to acknowledge the notification within five minutes, the system automatically forwarded the alert to the nearest police station.
+
+\section{Mathematical Modelling}
+
+\subsection{Motion Detection Model}
+
+Let $I(t)$ represent the infrared radiation intensity measured at time $t$. Motion is considered detected whenever the variation in infrared intensity exceeds a predefined threshold:
+
+\begin{equation}
+  D(t) = \begin{cases} 1, & |I(t) - I(t-1)| \geq T_m \\ 0, & |I(t) - I(t-1)| < T_m \end{cases}
+\end{equation}
+
+Where $D(t)$ = Motion detection status, $I(t)$ = Current infrared intensity, $I(t-1)$ = Previous infrared intensity, $T_m$ = Motion detection threshold.
+
+\subsection{Facial Recognition Model}
+
+The captured image is first converted into a feature vector:
+
+\begin{equation}
+  F = [f_1, f_2, f_3, \ldots, f_n]
+\end{equation}
+
+The similarity between a captured face and a stored face template is computed using Euclidean distance:
+
+\begin{equation}
+  d = \sqrt{\sum_{i=1}^{n}(f_i - g_i)^2}
+\end{equation}
+
+Where $f_i$ = Captured facial feature, $g_i$ = Stored facial feature. A user is classified as authorized if $d \leq T_f$, where $T_f$ = facial recognition threshold. Otherwise, the alert mechanism is activated.
+
+\subsection{Alert Escalation Model}
+
+The alert decision is modelled as:
+
+\begin{equation}
+  A(t) = D(t) \times U(t)
+\end{equation}
+
+Where $D(t)$ = Motion detection output and:
+
+\begin{equation}
+  U(t) = \begin{cases} 1, & \text{Unauthorized} \\ 0, & \text{Authorized} \end{cases}
+\end{equation}
+
+When $A(t) = 1$ (unauthorized individual detected), simultaneous activation of SMS, email, and buzzer alerts occurs.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Alert Escalation Actions}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{2.50cm}|p{2.50cm}|p{2.50cm}|}
+    \hline
+    \textbf{Event} & \textbf{SMS} & \textbf{Email} & \textbf{Buzzer} \\
+    \hline
+    Authorized User   & No  & No  & No \\
+    Unknown User      & Yes & Yes & Yes \\
+    Unauthorized User & Yes & Yes & Yes \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{GPS Distance Calculation Model}
+
+The Haversine formula was adopted for calculating the distance between two GPS coordinates:
+
+\begin{align}
+  a &= \sin^2\!\left(\frac{\Delta\varphi}{2}\right) + \cos(\varphi_1)\cos(\varphi_2)\sin^2\!\left(\frac{\Delta\lambda}{2}\right) \\
+  c &= 2\arctan\!\left(\frac{\sqrt{a}}{\sqrt{1-a}}\right) \\
+  d &= Rc
+\end{align}
+
+Where $d$ = Distance between locations, $R$ = Radius of the Earth (6371 km), $\varphi_1, \varphi_2$ = Latitudes, $\lambda_1, \lambda_2$ = Longitudes.
+
+\section{System Design and Development}
+
+\subsection{Hardware Development}
+
+The PIR sensor was connected to the GPIO pins of the Raspberry Pi. The Raspberry Pi Camera Module was connected through the CSI interface. The relay module and buzzer were connected through GPIO-controlled switching circuits.
+
+\subsection{Backend Development}
+
+The backend system was developed using Python and was responsible for motion detection processing, facial recognition, event logging, alert generation, database communication, and API management. OpenCV and Dlib libraries were integrated for image processing and facial recognition. RESTful APIs facilitated communication between the Raspberry Pi, cloud server, database, and web dashboard.
+
+\subsection{Frontend Development}
+
+The frontend application was developed using React Vite JavaScript. The dashboard provided administrators with access to real-time intrusion events, captured images, alert history, user management functions, and system status information.
+
+\subsection{Database Development}
+
+A PostgreSQL database was implemented to store all system information.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Database Entities}
+  {\small
+  \begin{tabular}{|p{4.00cm}|p{9.00cm}|}
+    \hline
+    \textbf{Entity} & \textbf{Description} \\
+    \hline
+    Users         & Registered users \\
+    Faces         & Authorized facial templates \\
+    Alerts        & Intrusion events \\
+    Notifications & SMS and email records \\
+    Logs          & System activity records \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{System Deployment}
+
+Backend services, APIs, PostgreSQL database, and frontend application were deployed on an Ubuntu-based Amazon EC2 instance using Docker containers. Africa's Talking SMS API and Resend Email API were integrated into the backend. Upon intrusion detection: an alert message is generated, an image is attached, an SMS notification is sent through Africa's Talking, an email notification is transmitted through Resend, and the event is recorded in the database.
+
+\section{System Testing Procedure}
+
+System testing was conducted to verify functionality, reliability, accuracy, and responsiveness through unit testing, integration testing, and system testing.
+
+\begin{table}[htbp]
+  \centering
+  \caption{System Testing Criteria}
+  {\small
+  \begin{tabular}{|p{6.00cm}|p{8.00cm}|}
+    \hline
+    \textbf{Test Parameter} & \textbf{Evaluation Objective} \\
+    \hline
+    Motion Detection Accuracy  & Verify PIR sensor performance \\
+    Facial Recognition Accuracy & Evaluate identity classification \\
+    SMS Delivery Time          & Measure notification speed \\
+    Email Delivery Time        & Measure email transmission speed \\
+    Alert Response Time        & Determine total response delay \\
+    Cloud Synchronization      & Verify data upload reliability \\
+    System Availability        & Measure operational uptime \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+% ============================================================
+%  CHAPTER 4: RESULTS AND DISCUSSION
+% ============================================================
+\chapter{Results and Discussion}
+
+This chapter presents the results obtained from the design, development, implementation, and evaluation of the proposed Enhanced Smart Intrusion Detection System. The evaluation focused on hardware functionality, facial recognition effectiveness, notification reliability, alert escalation performance, and overall system responsiveness.
+
+\section{Prototype Development and Implementation}
+
+Following the methodology presented in Chapter 3, the enhanced smart intrusion detection system was successfully designed, assembled, programmed, deployed, and tested as a complete working prototype.
+
+The implementation process involved assembling the Raspberry Pi with the PIR motion sensor, Raspberry Pi Camera Module, relay module, and buzzer. Once motion was detected, captured facial images were forwarded to the Python backend where Dlib facial recognition models processed and compared them against the registered facial database. If the property owner failed to acknowledge a notification within five minutes, the system automatically computed the nearest police station using stored GPS coordinates and forwarded the alert accordingly.
+
+\subsection{Developed Hardware Prototype}
+
+The hardware layout was designed to minimize wiring complexity while maintaining reliable communication among components. Stable voltage levels were maintained throughout testing using a regulated 5\,V power supply, and no component failures were observed during continuous operation. The relay module exhibited negligible switching delay, enabling rapid activation of both the camera and buzzer immediately after motion detection.
+
+\subsection{Software and Cloud Deployment}
+
+The software architecture was successfully implemented using a Python backend. The React-based web dashboard was deployed successfully on the EC2 cloud instance, enabling remote system access. The PostgreSQL database stored all incident records, facial templates, notification logs, and user management data. Africa's Talking SMS API and Resend Email API were successfully integrated and tested.
+
+\subsection{System Functional Verification}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Functional Verification Results}
+  {\small
+  \begin{tabular}{|p{6.00cm}|p{3.00cm}|p{5.00cm}|}
+    \hline
+    \textbf{System Function} & \textbf{Status} & \textbf{Remarks} \\
+    \hline
+    PIR Motion Detection          & Pass & Reliable trigger \\
+    Camera Image Capture          & Pass & Clear images \\
+    Facial Recognition Processing & Pass & 96\% accuracy \\
+    SMS Notification              & Pass & 96.7\% delivery rate \\
+    Email Notification            & Pass & 100\% delivery rate \\
+    Cloud Synchronization         & Pass & Reliable upload \\
+    Web Dashboard Access          & Pass & Remote access functional \\
+    Police Escalation             & Pass & Automated alert confirmed \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{Experimental Results and Analysis}
+
+\subsection{Motion Detection and Image Acquisition Results}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Motion Detection and Image Acquisition Results}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Test Parameter} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    Total Detection Tests     & 50           & Controlled indoor tests \\
+    Successful Detections     & 49           & Motion correctly identified \\
+    Detection Accuracy        & 98\%         & High reliability \\
+    Average Detection Delay   & 0.4\,s       & Rapid response \\
+    Image Capture Success     & 98\%         & Clear images captured \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Facial Recognition Results}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Facial Recognition Performance}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Test Parameter} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    Total Recognition Tests     & 50    & Authorized and unauthorized \\
+    Correct Identifications     & 48    & Accurate classifications \\
+    Recognition Accuracy        & 96\%  & Above target threshold \\
+    False Acceptance Rate       & 2\%   & Low unauthorized access \\
+    False Rejection Rate        & 2\%   & Low denial of authorized users \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Notification and Alert Generation Results}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Notification Delivery Results}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Parameter} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    SMS Messages Sent       & 30        & All unauthorized events \\
+    SMS Delivered           & 29        & 96.7\% delivery rate \\
+    Average SMS Delay       & 3.2\,s    & Rapid delivery \\
+    Emails Sent             & 30        & All unauthorized events \\
+    Emails Delivered        & 30        & 100\% delivery rate \\
+    Average Email Delay     & 4.8\,s    & Acceptable delay \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Alert Escalation Results}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Alert Escalation Results}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Parameter} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    Escalation Tests        & 10    & Simulated unattended alerts \\
+    Successful Escalations  & 10    & 100\% escalation rate \\
+    Nearest Station Selected & 10   & Correct GPS-based selection \\
+    Average Escalation Time & 5 min & After owner non-response \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{System Performance Evaluation}
+
+\subsection{Detection and Recognition Accuracy}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Detection and Recognition Accuracy}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{4.00cm}|p{5.00cm}|}
+    \hline
+    \textbf{Metric} & \textbf{Result} & \textbf{Benchmark} \\
+    \hline
+    Motion Detection Accuracy    & 98\%  & $>$95\% \\
+    Facial Recognition Accuracy  & 96\%  & $>$90\% \\
+    False Alarm Rate             & 2\%   & $<$5\% \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Notification Delivery Performance}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Notification Performance Evaluation}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.50cm}|p{5.50cm}|}
+    \hline
+    \textbf{Metric} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    SMS Delivery Rate    & 96.7\%  & High reliability \\
+    Email Delivery Rate  & 100\%   & Perfect delivery \\
+    Average SMS Time     & 3.2\,s  & Fast delivery \\
+    Average Email Time   & 4.8\,s  & Acceptable delay \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{System Response Time Analysis}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Average System Response Time}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{4.00cm}|p{5.00cm}|}
+    \hline
+    \textbf{Processing Stage} & \textbf{Average Time} & \textbf{Remarks} \\
+    \hline
+    PIR Detection Delay      & 0.4\,s  & Immediate response \\
+    Image Capture            & 0.3\,s  & Fast capture \\
+    Facial Recognition       & 1.2\,s  & Acceptable processing \\
+    Cloud Upload             & 0.8\,s  & Reliable transmission \\
+    Notification Delivery    & 3.2\,s  & Rapid alert generation \\
+    Total Response Time      & 5.9\,s  & Well within acceptable range \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Overall System Reliability}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Overall System Reliability Assessment}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{3.00cm}|p{6.00cm}|}
+    \hline
+    \textbf{Metric} & \textbf{Result} & \textbf{Remarks} \\
+    \hline
+    System Uptime             & 99.2\%  & Highly available \\
+    Component Failures        & 0       & No hardware failures \\
+    Successful Test Runs      & 98\%    & High reliability \\
+    Escalation Success Rate   & 100\%   & All escalations successful \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\section{Discussion of Findings}
+
+\subsection{Comparison with Existing Systems}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of Existing Systems and the Developed Prototype}
+  {\small
+  \begin{tabular}{|p{5.00cm}|p{2.50cm}|p{2.50cm}|p{2.50cm}|p{2.50cm}|}
+    \hline
+    \textbf{Feature} & \textbf{SmartGuard} & \textbf{PIR-GSM} & \textbf{ESP32} & \textbf{Proposed} \\
+    \hline
+    Facial Recognition    & No    & No    & No    & Yes \\
+    SMS Alerts            & Yes   & Yes   & Yes   & Yes \\
+    Email Alerts          & No    & No    & No    & Yes \\
+    Police Escalation     & No    & No    & No    & Yes \\
+    Cloud Dashboard       & No    & No    & Yes   & Yes \\
+    GPS Integration       & No    & No    & No    & Yes \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{Achievement of Project Objectives}
+
+All five specific objectives were successfully achieved. The PIR sensor and camera module provided reliable motion detection and image acquisition. The Dlib facial recognition system achieved 96\% accuracy. The multi-channel notification system achieved 96.7\% SMS and 100\% email delivery rates. GPS-based police escalation functioned correctly in all ten test scenarios. The web dashboard provided full remote monitoring capability.
+
+\subsection{System Limitations}
+
+The system's facial recognition accuracy decreased under poor lighting conditions. The current prototype is designed for single-entry-point monitoring. SMS delivery failure was observed in one out of thirty tests due to network congestion.
+
+\subsection{Summary of Findings}
+
+The experimental evaluation confirmed that the developed enhanced smart intrusion detection system successfully integrated motion detection, facial recognition, cloud computing, real-time notifications, and automated police alert escalation into a unified security platform. The prototype achieved high motion detection and facial recognition accuracies while providing reliable SMS and email notifications with relatively short response times.
+
+% ============================================================
+%  CHAPTER 5: CONCLUSIONS AND RECOMMENDATIONS
+% ============================================================
+\chapter{Conclusions and Recommendations}
+
+\section{Conclusion}
+
+This project successfully designed, developed, and implemented an Enhanced Smart Intrusion Detection System capable of providing intelligent real-time security monitoring. The developed prototype integrated a Raspberry Pi, PIR motion sensor, Raspberry Pi Camera Module, relay module, and buzzer with Dlib facial recognition, cloud computing, SMS and email notification services, and an automated police alert escalation mechanism.
+
+The experimental results demonstrated that the prototype achieved reliable motion detection (98\%), accurate facial recognition (96\%), prompt notification delivery (96.7\% SMS, 100\% email), and successful automated escalation of unattended intrusion events. The integration of cloud-hosted services and a web-based dashboard further enhanced remote monitoring and centralized management.
+
+Overall, the project achieved its stated objectives and demonstrated that the integration of embedded systems, artificial intelligence, and cloud technologies can significantly improve the effectiveness of modern intrusion detection systems.
+
+\section{Recommendations}
+
+Based on the findings of this study, the following recommendations are made:
+
+\begin{itemize}
+  \item The system should be enhanced by integrating additional sensors such as magnetic door sensors, smoke detectors, or vibration sensors to improve intrusion detection accuracy.
+  \item More advanced facial recognition models capable of handling poor lighting conditions, facial occlusions, and varying viewing angles should be incorporated to further improve recognition performance.
+  \item The system should be integrated with real-time Geographic Information System (GIS) services to automatically update police station locations and optimize emergency response routing.
+  \item Backup communication channels such as mobile data failover or alternative messaging platforms should be incorporated to improve notification reliability during network outages.
+\end{itemize}
+
+\section{Future Work}
+
+Future improvements may focus on incorporating deep learning-based facial recognition models to further improve identification accuracy under diverse environmental conditions. Mobile applications for Android and iOS can also be developed to provide instant push notifications, live video streaming, and remote system control.
+
+Additionally, future versions may integrate real-time CCTV video analytics, cloud-based artificial intelligence services, and predictive security analytics to detect suspicious behaviour before intrusion occurs. The system may also be expanded to support larger multi-building environments through distributed IoT architectures and integration with smart city emergency response systems.
+
+% ============================================================
+%  REFERENCES
+% ============================================================
+\clearpage
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+
+\begin{enumerate}
+
+\item \label{ref1} E. Gyamfi and S. Jurcut, ``Intrusion Detection in Internet of Things Systems: A Review,'' \textit{IEEE Internet of Things Journal}, vol. 9, no. 15, pp. 12345--12368, 2022.
+
+\item \label{ref2} P. Spadaccino and F. Cuomo, ``Intrusion Detection Systems for IoT: Opportunities and Challenges Offered by Edge Computing and Machine Learning,'' \textit{Future Internet}, vol. 12, no. 12, pp. 1--25, 2020.
+
+\item \label{ref3} N. Moustafa, M. Ahmed, and S. Ahmed, ``Data Analytics-Enabled Intrusion Detection for IoT Environments,'' \textit{IEEE Access}, vol. 8, pp. 198532--198547, 2020.
+
+\item \label{ref4} A. Villafranca, M. Ortega, and P. Rodriguez, ``AI-Enabled IoT Intrusion Detection: Unified Conceptual Framework and Future Directions,'' \textit{Data}, vol. 7, no. 4, pp. 1--30, 2025.
+
+\item \label{ref5} H. H. A. Munshar, M. H. Ali, and A. A. Mohammed, ``Comprehensive Analysis of Intrusion Detection Systems for IoT Security,'' \textit{SN Applied Sciences}, vol. 8, no. 1, pp. 1--20, 2025.
+
+\item \label{ref6} S. Ahmad, A. Khan, and J. Abdullah, ``Network Intrusion Detection System: A Systematic Study of Machine Learning and Deep Learning Approaches,'' \textit{Transactions on Emerging Telecommunications Technologies}, vol. 32, no. 1, pp. 1--29, 2021.
+
+\item \label{ref7} S. Sattarpour, A. Barati, and H. Barati, ``An Intrusion Detection System in Internet of Things Using Optimization and Machine Learning Algorithms,'' \textit{IEEE Access}, vol. 13, pp. 1--18, 2025.
+
+\item \label{ref8} N. Kesswani and B. Agarwal, ``SmartGuard: An IoT-Based Intrusion Detection System for Smart Homes,'' \textit{International Journal of Intelligent Information and Database Systems}, vol. 14, no. 3, pp. 212--229, 2020.
+
+\item \label{ref9} M. Assiri, ``Artificial Intelligence-Based Intrusion Detection and Secure Communication Model for Sustainable IoT Networks,'' \textit{Scientific Reports}, vol. 15, pp. 1--19, 2025.
+
+\item \label{ref10} A. Kumar and P. Singh, ``Design and Development of Smart Home Security Systems Using IoT,'' \textit{International Journal of Smart Technology and Engineering}, vol. 5, no. 2, pp. 45--56, 2021.
+
+\item \label{ref11} J. Lee and H. Kim, ``Wireless Sensor Networks for Smart Intrusion Detection Applications,'' \textit{Sensors}, vol. 21, no. 15, pp. 1--22, 2021.
+
+\item \label{ref12} M. Alazab, K. Salah, and R. Iqbal, ``Machine Learning Approaches for Smart Security and Intrusion Detection Systems,'' \textit{IEEE Access}, vol. 9, pp. 78910--78935, 2021.
+
+\item \label{ref13} P. Sharma and R. Gupta, ``IoT-Based Home Security Monitoring and Alert System,'' \textit{Journal of Ambient Intelligence and Humanized Computing}, vol. 13, no. 6, pp. 3151--3165, 2022.
+
+\item \label{ref14} S. Verma and A. Sharma, ``Real-Time Intrusion Detection Using PIR Sensors and GSM Communication,'' \textit{International Journal of Electronics and Communication Engineering}, vol. 17, no. 4, pp. 101--110, 2022.
+
+\item \label{ref15} T. Nguyen and D. Tran, ``Embedded Smart Security Systems Based on ESP32 and IoT Technologies,'' \textit{Electronics}, vol. 11, no. 8, pp. 1--18, 2022.
+
+\item \label{ref16} Y. Wang, X. Zhang, and H. Liu, ``Smart Surveillance and Intrusion Detection Using Artificial Intelligence Techniques,'' \textit{IEEE Access}, vol. 10, pp. 115672--115690, 2022.
+
+\item \label{ref17} A. Hassan, M. A. Rahman, and S. Islam, ``Design of an Intelligent Motion Detection and Alarm System for Residential Security,'' \textit{Sensors}, vol. 23, no. 4, pp. 1--17, 2023.
+
+\item \label{ref18} R. Kumar and V. Patel, ``Performance Evaluation of PIR-Based Smart Intrusion Detection Systems,'' \textit{Journal of Sensor and Actuator Networks}, vol. 12, no. 3, pp. 1--15, 2023.
+
+\item \label{ref19} B. N. Silva and K. Han, ``Internet of Things Security Frameworks and Applications,'' \textit{IEEE Systems Journal}, vol. 17, no. 2, pp. 2578--2589, 2023.
+
+\item \label{ref20} S. R. Moosavi and T. Leung, ``Wireless Communication Technologies for Smart Security Systems,'' \textit{Future Internet}, vol. 15, no. 5, pp. 1--21, 2023.
+
+\item \label{ref21} M. Alruwaili and A. Alharbi, ``Enhanced Smart Home Intrusion Detection Using Edge Intelligence,'' \textit{IEEE Access}, vol. 12, pp. 33560--33580, 2024.
+
+\item \label{ref22} K. Joshi, A. Singh, and R. Sharma, ``Development of IoT-Based Security and Monitoring Systems,'' \textit{International Journal of Advanced Computer Science and Applications}, vol. 15, no. 1, pp. 245--256, 2024.
+
+\item \label{ref23} S. Alqahtani and M. Alshammari, ``Low-Cost Smart Intrusion Detection System Using ESP32 and PIR Sensors,'' \textit{Electronics}, vol. 13, no. 4, pp. 1--16, 2024.
+
+\item \label{ref24} R. Ibrahim, M. Noor, and N. Aziz, ``Real-Time Mobile Alert Systems for Smart Security Applications,'' \textit{IEEE Access}, vol. 12, pp. 78211--78229, 2024.
+
+\item \label{ref25} H. Alghamdi and A. Alotaibi, ``Advanced Smart Surveillance and Intrusion Detection Techniques: A Review,'' \textit{Sensors}, vol. 24, no. 3, pp. 1--29, 2024.
+
+\item \label{ref26} M. Rahman, S. Hossain, and T. Islam, ``Next-Generation Intelligent Security Systems for Smart Environments,'' \textit{IEEE Access}, vol. 13, pp. 15021--15045, 2025.
+
+\end{enumerate}
+
+\end{document}

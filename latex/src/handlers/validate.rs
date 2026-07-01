@@ -19,14 +19,18 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
         input.display()
     );
 
-    // Use a temp dir for media (discarded after validation).
-    let tmp = std::env::temp_dir().join("docx2tex_validate");
+    // Use a process-specific temp dir for media (discarded after validation).
+    let tmp = std::env::temp_dir().join(format!("docx2tex_validate_{}", std::process::id()));
     std::fs::create_dir_all(&tmp)?;
 
     println!("Validating {}…\n", input.display());
 
-    let doc = docx_reader::parse(input, &tmp)
-        .with_context(|| format!("Failed to parse {}", input.display()))?;
+    let parse_result = docx_reader::parse(input, &tmp)
+        .with_context(|| format!("Failed to parse {}", input.display()));
+    if parse_result.is_err() {
+        let _ = std::fs::remove_dir_all(&tmp);
+    }
+    let doc = parse_result?;
 
     // ── Summary counts ────────────────────────────────────────────────────────
     let mut headings = 0u32;
@@ -45,7 +49,7 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
             Element::Table { .. }     => tables += 1,
             Element::Image { .. }     => images += 1,
             Element::PageBreak        => page_breaks += 1,
-            Element::TocBlock         => toc_blocks += 1,
+            Element::TocBlock | Element::LofBlock | Element::LotBlock => toc_blocks += 1,
         }
     }
 
@@ -80,16 +84,22 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
                 let preview = truncate(&preview, 60);
                 println!("  [{idx:>3}] Paragraph: \"{preview}\"");
             }
-            Element::List { ordered, items, level } => {
+            Element::List { ordered, items } => {
                 let kind = if *ordered { "ordered" } else { "unordered" };
+                let max_level = items.iter().map(|(lvl, _)| *lvl).max().unwrap_or(0);
                 println!(
-                    "  [{idx:>3}] List ({kind}, level {level}): {} item(s)",
+                    "  [{idx:>3}] List ({kind}, max depth {max_level}): {} item(s)",
                     items.len()
                 );
             }
-            Element::Table { rows } => {
+            Element::Table { rows, caption } => {
                 let cols = rows.first().map(|r| r.len()).unwrap_or(0);
-                println!("  [{idx:>3}] Table: {} row(s) × {cols} col(s)", rows.len());
+                if let Some(cap) = caption {
+                    let preview = &cap[..cap.len().min(50)];
+                    println!("  [{idx:>3}] Table: {} row(s) × {cols} col(s) — \"{preview}\"", rows.len());
+                } else {
+                    println!("  [{idx:>3}] Table: {} row(s) × {cols} col(s)", rows.len());
+                }
             }
             Element::Image { path, .. } => {
                 println!("  [{idx:>3}] Image: {path}");
@@ -99,6 +109,12 @@ pub fn run(args: ValidateArgs) -> anyhow::Result<()> {
             }
             Element::TocBlock => {
                 println!("  [{idx:>3}] TableOfContents (auto-generated)");
+            }
+            Element::LofBlock => {
+                println!("  [{idx:>3}] ListOfFigures (auto-generated)");
+            }
+            Element::LotBlock => {
+                println!("  [{idx:>3}] ListOfTables (auto-generated)");
             }
         }
     }

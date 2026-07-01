@@ -1,0 +1,1108 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\pagestyle{fancy}
+\usepackage[normalem]{ulem}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{setspace}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\emergencystretch}{5em}
+\sloppy
+
+% Suppress default title
+\renewcommand{\maketitle}{}
+
+\begin{document}
+
+% ============================================================
+%  TITLE PAGE
+% ============================================================
+\begin{titlepage}
+  \centering
+
+  \includegraphics[width=4cm]{media/image1.jpeg}\\[0.5cm]
+
+  {\large \textbf{KYAMBOGO UNIVERSITY}}\\[0.2cm]
+  {\normalsize \textbf{FACULTY OF ENGINEERING}}\\[0.1cm]
+  {\normalsize \textbf{DEPARTMENT OF ELECTRICAL AND ELECTRONICS ENGINEERING}}\\[0.3cm]
+  {\normalsize BACHELOR OF ENGINEERING IN TELECOMMUNICATIONS ENGINEERING}\\[1.5cm]
+
+  \rule{\linewidth}{0.5pt}\\[0.4cm]
+  {\Large \textbf{THE AUTOMATED ROUTER MANAGEMENT SYSTEM TO IMPROVE THE LIMITATIONS OF CGNAT}}\\[0.4cm]
+  \rule{\linewidth}{0.5pt}\\[1.5cm]
+
+  {\normalsize \textit{A report submitted to the Electrical and Electronics Engineering Department,\\
+  Kyambogo University, in fulfillment of the requirements for the degree of\\
+  Bachelor of Engineering in Telecommunications Engineering}}\\[1.5cm]
+
+  {\normalsize \textbf{By}}\\[0.3cm]
+  {\Large \textbf{MUHWEZI MARK}}\\[0.2cm]
+  {\normalsize \textbf{Registration Number: 22/U/ETD/0996/GV}}\\[1cm]
+
+  {\normalsize Supervisor: \textbf{Dr. Mugerwa Dickson}}\\[1.5cm]
+
+  {\normalsize June 2026}
+\end{titlepage}
+
+% ============================================================
+%  DECLARATION
+% ============================================================
+\clearpage
+\chapter*{Declaration of Authorship}
+\addcontentsline{toc}{chapter}{Declaration of Authorship}
+
+I Muhwezi Mark hereby declare that this final year project report is an original and authentic work that has been carried out by me under the supervision of Dr. Mugerwa Dickson as part of my course requirements for the Bachelor of Engineering in Telecommunications Engineering of Kyambogo University.
+
+I confirm that this report has not been submitted previously for any other academic award or qualification. All sources of information used in this report have been duly acknowledged through appropriate citations and references.
+
+I also confirm that the work presented in this report is free from any plagiarism and any contribution made by others to this work has been duly acknowledged.
+
+I acknowledge that the copyright of this report belongs to the academic institution and that no part of this report may be reproduced or transmitted in any form or by any means, electronic, mechanical, photocopying, recording or otherwise, without the prior written permission of the academic institution.
+
+\vspace{2cm}
+\noindent
+\textbf{MUHWEZI MARK}\\
+June 2026
+
+% ============================================================
+%  APPROVAL
+% ============================================================
+\clearpage
+\chapter*{Approval}
+\addcontentsline{toc}{chapter}{Approval}
+
+This final year project has been done under the supervision and has been submitted to the Faculty of Engineering of Kyambogo University for examination with approval.
+
+\vspace{1cm}
+\noindent Supervisor: Dr. Mugerwa Dickson
+
+\vspace{1.5cm}
+\noindent Sign: \underline{\hspace{5cm}}
+
+\vspace{1cm}
+\noindent Date: \underline{\hspace{5cm}}
+
+% ============================================================
+%  DEDICATION
+% ============================================================
+\clearpage
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+
+I dedicate this work to my beloved families and friends, whose unwavering support, encouragement and sacrifices have been the foundation of our academic journey. To my family, for instilling in me the value of education and perseverance and to our friends and colleagues for their motivation and inspiration throughout the course of the project. This work is also dedicated to all students and researchers striving to use technology to create innovative solutions for real world challenges.
+
+% ============================================================
+%  ACRONYMS
+% ============================================================
+\clearpage
+\chapter*{Acronyms}
+\addcontentsline{toc}{chapter}{Acronyms}
+
+This is a list of acronyms used throughout this report.
+
+\begin{tabbing}
+  \hspace{3cm} \= \kill
+  NAT       \> Network Address Translation \\
+  CGNAT     \> Carrier Grade Network Address Translation \\
+  RFC       \> Requests for Comments \\
+  IPv4      \> Internet Protocol Version 4 \\
+  IPv6      \> Internet Protocol Version 6 \\
+  QoS       \> Quality of Service \\
+  AWS       \> Amazon Web Services \\
+  RSA       \> Rivest Shamir Adleman \\
+  SSH       \> Secure Shell \\
+  VoIP      \> Voice Over Internet Protocol \\
+  NAC       \> Network Access Control \\
+  USSD      \> Unstructured Supplementary Service Data \\
+  MSISDN    \> Mobile Station International Subscriber Directory Number \\
+  SMS       \> Short Message Service \\
+  Email     \> Electronic Mail \\
+  SS7       \> Signaling System No. 7 \\
+  JWT       \> JSON Web Token \\
+  JSON      \> JavaScript Object Notation \\
+  TCP       \> Transmission Control Protocol \\
+  HTTP      \> Hypertext Transfer Protocol \\
+  ISP       \> Internet Service Provider \\
+  WLAN      \> Wireless Local Area Network \\
+  AAA       \> Authentication, Authorization and Accounting \\
+  REST      \> Representational State Transfer \\
+  AES       \> Advanced Encryption System \\
+  CPE       \> Customer Premises Equipment \\
+  API       \> Application Programming Interface \\
+  3GPP      \> 3rd Generation Partnership Project \\
+  HMAC      \> Hash-based Message Authentication Code \\
+  ER        \> Entity Relationship \\
+  URL       \> Uniform Resource Locator \\
+  SSL       \> Secure Sockets Layer \\
+  CORS      \> Cross Origin Resource Sharing \\
+  UI        \> User Interface \\
+\end{tabbing}
+
+% ============================================================
+%  URL LINKS
+% ============================================================
+\clearpage
+\chapter*{URL Links}
+\addcontentsline{toc}{chapter}{URL Links}
+
+These are links associated with the project prototype:
+
+\begin{itemize}
+  \item Database ER Diagram --- \href{https://terraconnect-er-diagram.web.app}{https://terraconnect-er-diagram.web.app}
+  \item TerraConnect Uganda Dashboard UI --- \href{https://terraconnect-uganda.web.app}{https://terraconnect-uganda.web.app}
+  \item Backend URL --- \href{https://quicknetwifi.org/terraconnect}{https://quicknetwifi.org/terraconnect}
+\end{itemize}
+
+% ============================================================
+%  NOMENCLATURE
+% ============================================================
+\clearpage
+\chapter*{Nomenclature}
+\addcontentsline{toc}{chapter}{Nomenclature}
+
+The name \textbf{TerraConnect Uganda} was deliberately chosen to reflect the core purpose, geographical context, and technical vision of this project.
+
+\textbf{``Terra''} is derived from the Latin word for \textit{earth} or \textit{land}, symbolising the physical network infrastructure --- routers, cables, and devices --- that form the foundation of internet connectivity across communities. It represents the grounded, real-world nature of the problem being addressed: the challenge of managing distributed physical network equipment remotely and reliably.
+
+\textbf{``Connect''} signifies the system's primary function: establishing and maintaining secure, stable, and seamless connections between geographically dispersed MikroTik routers and a centralised management platform. It further alludes to the WireGuard VPN tunnels that form the backbone of the system's communication architecture, bridging devices across diverse and often constrained network environments such as those imposed by Carrier-Grade NAT (CGNAT).
+
+\textbf{``Uganda''} anchors the project in its operational context, acknowledging that the system was designed, developed, and tested with the specific networking landscape of Uganda in mind --- including the prevalence of ISPs operating under CGNAT conditions, limited static IP availability, and the growing demand for scalable remote network management solutions in the region.
+
+Together, \textbf{TerraConnect Uganda} embodies a system that connects the physical network infrastructure of Uganda through a secure, intelligent, and remotely accessible platform --- bridging the gap between network administrators and the routers they manage, regardless of geographical distance or network constraints.
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+\clearpage
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+The widespread adoption of Carrier-Grade NAT (CGNAT) by Internet Service Providers, driven by global IPv4 address exhaustion, has created a significant challenge for the remote management of customer premises equipment, such as MikroTik routers (Cloudflare, 2022). While CGNAT effectively conserves public IP addresses, it prevents unsolicited inbound connections, thereby breaking traditional methods for direct configuration, monitoring, and troubleshooting (Al-Ani \& Othman, 2020). Existing workarounds, including static IP leasing, port forwarding, or reliance on vendor-specific relay services like MikroTik's Back-to-Home (BTH), are often costly, insecure, or lack the flexibility required for scalable, automated deployments (MikroTik, 2023; Sokolov \& Komarov, 2022).
+
+This project presents a novel system that integrates a Rust-based backend with the RouterOS API and WireGuard tunnels to provide a secure, cost-effective, and reliable solution for remote access to MikroTik routers behind CGNAT. The system automates the provisioning of WireGuard peers on both the routers and a public cloud endpoint (hosted on AWS EC2), securely managing cryptographic keys and the entire tunnel lifecycle (Donenfeld, 2020). A lightweight web interface, developed with modern frontend technologies, provides administrators with real-time visibility into router status, peer activity, and tunnel health.
+
+The solution was evaluated in real-world scenarios, including routers behind CGNAT, on public IP networks, and on dynamic LTE connections. The results demonstrate that by leveraging persistent outbound WireGuard connections, routers remain consistently accessible and manageable despite CGNAT restrictions. A comparative analysis with MikroTik's BTH service highlights the system's advantages in terms of operational flexibility, independence from vendor infrastructure, and its inherent potential for scalable, multi-tenant deployments.
+
+The findings confirm that the synergistic combination of Rust --- chosen for its performance and memory safety (Davidson et al., 2021) --- the RouterOS API, and WireGuard provides a high-performance and practical approach to overcoming CGNAT limitations. This project offers a valuable, open-source contribution to network operators, enterprises, and researchers in the fields of network automation and secure remote access.
+
+% ============================================================
+%  ACKNOWLEDGEMENTS
+% ============================================================
+\clearpage
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+All glory and gratitude are first rendered to the Almighty God, whose grace, wisdom, and strength sustained us throughout the course of this project from its inception to its successful completion.
+
+We wish to express our profound gratitude to our supervisor, Dr. Mugerwa Dickson, for his unwavering guidance, rigorous intellectual engagement, and consistent support during both the research and simulation phases of this work. His depth of expertise and constructive critique were instrumental in shaping this project to its present standard.
+
+Our sincere appreciation is further extended to the academic and administrative staff of the Department of Electrical and Electronics Engineering, Kyambogo University, for fostering a stimulating and supportive learning environment throughout our academic programme.
+
+We also acknowledge our colleagues and peers whose contributions through scholarly discussions, suggestions, and moral encouragement enriched this work in no small measure.
+
+Finally, we are deeply indebted to our families for their unconditional love, patient understanding, and steadfast encouragement --- a constant source of strength and motivation throughout this journey.
+
+\vspace{1.5cm}
+\noindent
+\textbf{MUHWEZI MARK}\\
+June 2026
+
+% ============================================================
+%  LIST OF FIGURES / TABLES / TOC
+% ============================================================
+\clearpage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+\clearpage
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\tableofcontents
+
+% ============================================================
+%  CHAPTER 1
+% ============================================================
+\clearpage
+\chapter{CHAPTER 1: INTRODUCTION}
+
+\section{1.1 Background of the study}
+
+In recent years, the global exhaustion of IPv4 addresses has led many Internet Service Providers (ISPs) to adopt Carrier-Grade Network Address Translation \textbf{(CGNAT)} as a way of extending the usability of the limited IPv4 space. While CGNAT helps ISPs conserve public IP addresses, it introduces a major limitation where devices behind CGNAT cannot be directly accessed from the internet (Al-Ani \& Othman, 2020). This creates significant challenges for remote network management, device monitoring, and configuration, especially for organizations that rely on remote access to their routers and network equipment (Herzberg et al., 2022).
+
+MikroTik routers, powered by RouterOS, are widely used in both small and large-scale networks due to their flexibility, affordability, and powerful features. Network administrators typically manage MikroTik routers through public IP access, VPNs, or third-party cloud services such as MikroTik's \textit{Cloud Hosted Router (CHR)} or \textit{Back-To-Home (BTH)} (Mikrotik, 2023). These solutions often have limitations and they may require static public IPs, rely on vendor-controlled infrastructure, or introduce privacy and scalability concerns (Sokolov \& Komarov, 2022).
+
+At the same time, the increasing need for secure, efficient, and automated remote management has led to the exploration of modern programming languages and VPN technologies. Rust, a systems programming language known for its safety, speed, and concurrency, has become a preferred choice for developing high-performance backend systems (Davidson et al., 2021; Mozilla Foundation, 2023). On the other hand, WireGuard, a lightweight and cryptographically secure VPN protocol, has emerged as a modern alternative to traditional VPNs like IPSec and OpenVPN due to its simplicity and superior performance (Donenfeld, 2020; Kumar \& Singh, 2021; Wright \& Samuels, 2021).
+
+With this integration of Rust, WireGuard, and RouterOS API we create an opportunity to develop a system that allows remote router access even under CGNAT, without relying on public IPs or centralized cloud services (MikroTik, 2024). This system enables routers to initiate secure outbound connections to a central Rust-based backend server through WireGuard tunnels, effectively bypassing CGNAT restrictions while maintaining encryption, authentication, and data integrity (Fielding, 2000; Gong et al., 2018).
+
+\section{1.2 Problem Statement}
+
+In Uganda and many other regions grappling with IPv4 address scarcity, CGNAT has become the default network architecture employed by ISPs. This fundamentally prevents direct inbound connections to customer-premise devices, rendering traditional remote management methods ineffective.
+
+MikroTik routers, which are ubiquitous in these markets due to their cost-effectiveness and capability, are therefore largely unmanageable remotely without either a dedicated public IP (expensive and scarce) or vendor-specific solutions.
+
+Consequently, a significant gap exists in the current landscape. Solutions like MikroTik's Back-To-Home (BTH) VPN offer convenience but are constrained by vendor lock-in, RouterOS version requirements, and limited scalability for operators managing large fleets.
+
+This project aims to address this critical gap by designing and implementing a self-hosted, automated system using Rust, WireGuard, and the RouterOS API that enables secure, scalable, and vendor-independent remote management of MikroTik routers behind CGNAT.
+
+\section{1.3 Objectives}
+
+\textbf{Main Objective}
+
+The main objective of this project is to design, implement, and evaluate an automated router management system that overcomes the limitations of CGNAT by leveraging WireGuard VPN tunnels and the RouterOS API, implemented using the Rust programming language.
+
+\textbf{Specific Objectives}
+
+\begin{enumerate}
+  \item To analyse the technical constraints imposed by CGNAT on remote router management.
+  \item To design and develop a secure backend service in Rust implementing WireGuard peer provisioning via the RouterOS API.
+  \item To integrate a web-based management dashboard for real-time monitoring and configuration.
+  \item To evaluate the system's performance, reliability, and security under realistic CGNAT conditions.
+\end{enumerate}
+
+\section{1.4 Justification of the System}
+
+The growing adoption of Carrier-Grade Network Address Translation (CGNAT) by ISPs has rendered traditional remote router management techniques increasingly ineffective. In regions such as Uganda, where IPv4 scarcity is acute, the majority of deployed MikroTik routers operate behind CGNAT, making direct remote configuration practically impossible without expensive static IP allocations.
+
+Existing solutions, such as MikroTik's Back-To-Home (BTH) and third-party cloud relay services, impose vendor dependency, version restrictions, and scalability limitations that are unsuitable for operators managing large-scale deployments.
+
+This project is justified on both technical and practical grounds. From a technical standpoint, it demonstrates that a combination of Rust, WireGuard, and the RouterOS API can produce a self-hosted, secure, and high-performance alternative to existing vendor solutions. From a practical standpoint, the project addresses a real-world gap in network infrastructure management that directly impacts ISPs and network operators across Uganda and similar markets.
+
+This project is thus justified as a cost-effective, scalable, and open-source contribution to the field of network automation and remote device management.
+
+\section{1.5 Significance of the System}
+
+This project is significant for its direct contribution to solving a practical and pressing problem in network infrastructure management.
+
+\textbf{Enables Secure Remote Management Behind CGNAT}
+
+The system provides a reliable method for continuous, secure remote access to MikroTik routers regardless of their network topology, eliminating the dependence on public IP addresses.
+
+\textbf{Reduces Operational Costs and Vendor Dependency}
+
+By leveraging self-hosted WireGuard tunnels instead of relying on paid vendor relay services, the system significantly reduces operational expenditure and removes lock-in to MikroTik's proprietary infrastructure.
+
+\textbf{Enhances Security with Modern Cryptography and Memory Safety}
+
+The system's security is fortified by the integration of two complementary technologies. WireGuard uses modern, audited cryptographic primitives, while Rust's ownership model eliminates memory safety vulnerabilities at compile time.
+
+\textbf{Provides Scalable Automation for Large Deployments}
+
+The Rust-based backend automates the entire lifecycle of WireGuard peer management, enabling operators to manage hundreds or thousands of routers from a single platform.
+
+\textbf{Contributes to Academic and Practical Knowledge}
+
+This project serves as a valuable case study at the intersection of systems programming, network security, and automation --- particularly relevant for researchers and practitioners in developing regions.
+
+\textbf{Serves as an Open-Source Reference for Practitioners}
+
+The implementation will act as a comprehensive resource for network engineers seeking to deploy self-hosted VPN management solutions without vendor dependency.
+
+\section{1.6 Scope of the Project}
+
+This project focuses on the design and development of a secure, automated, and remotely accessible management system for MikroTik routers operating behind CGNAT. The scope encompasses the following key activities:
+
+\begin{enumerate}
+  \item \textbf{Backend Development} --- Building a high-performance Rust service (using the Axum framework) to expose REST endpoints for router registration, WireGuard provisioning, and monitoring.
+  \item \textbf{RouterOS Automation} --- Integrating with the RouterOS API to automate the configuration of WireGuard interfaces and peer settings on MikroTik devices.
+  \item \textbf{Secure Tunneling} --- Establishing and maintaining encrypted WireGuard tunnels between routers and a public AWS EC2 endpoint.
+  \item \textbf{Data Persistence} --- Implementing a PostgreSQL database to store router metadata, user records, WireGuard keys, and session information.
+  \item \textbf{Management Dashboard} --- Developing a React-based web interface for administrators to monitor router status, view tunnel health, and manage the system.
+  \item \textbf{Android Network Bridge} --- Developing a Kotlin Android application that operates as a primary bridge between the user's local network (LAN) and the cloud backend hosted on AWS EC2.
+  \item \textbf{System Evaluation} --- Assessing the system's performance, reliability, and security under realistic network conditions, including operation behind CGNAT.
+\end{enumerate}
+
+The project scope is limited to managing MikroTik devices running RouterOS v7 or higher and does not include support for other network equipment vendors.
+
+\section{1.7 Out of Scope}
+
+To maintain focus and feasibility within the project timeframe, the following aspects are considered out of scope:
+
+\begin{enumerate}
+  \item Integration with third-party router brands or proprietary VPN systems other than MikroTik and WireGuard.
+  \item Development of a full-fledged graphical user interface (GUI) dashboard beyond basic admin controls.
+  \item Large-scale ISP-grade deployment or integration with commercial Network Management Systems (NMS).
+\end{enumerate}
+
+% ============================================================
+%  CHAPTER 2
+% ============================================================
+\chapter{CHAPTER 2: LITERATURE REVIEW}
+
+\section{2.1 Introduction}
+
+This chapter reviews the literature relevant to the development of a Rust-driven WireGuard management system for MikroTik routers, designed to overcome Carrier-Grade NAT (CGNAT) barriers to remote access and management. The review synthesizes knowledge from four core domains: the programmability of MikroTik RouterOS (via its API and REST interface), the role of WireGuard as a lightweight VPN for NAT traversal, the Rust ecosystem for building secure backends, and an analysis of MikroTik's vendor-provided solution, Back-To-Home (BTH), to identify its limitations.
+
+Given that operational knowledge in network automation often resides outside traditional academic publishing, this review draws from a wide range of sources, including peer-reviewed studies, technical whitepapers, official documentation, and community-driven resources such as GitHub repositories and forum discussions (Sokolov \& Komarov, 2022; Wijaya et al., 2020). The chapter concludes by identifying gaps in the existing landscape and highlighting how the proposed system addresses these deficiencies by providing a unified, operator-controlled, and programmable backend for the large-scale management of MikroTik devices operating behind CGNAT.
+
+\section{2.2 RouterOS Programmability (API \& REST)}
+
+According to MikroTik Documentation (2024), MikroTik RouterOS provides multiple interfaces for programmatic device configuration. The primary interface is a proprietary binary API that mirrors the Command Line Interface (CLI), allowing external programs to query device status, modify configurations, and execute commands (MikroTik, 2024). This API operates over TCP using a structured, lightweight tagging scheme and is widely used for automating device provisioning and management.
+
+Newer RouterOS versions (v7.x+) introduce a REST/JSON API wrapper around the console, which simplifies integration with modern, HTTP-based backend systems (MikroTik, 2022). However, REST support is version-dependent and unavailable on many legacy devices still running RouterOS v6, particularly in developing regions. This creates an interoperability challenge, necessitating that any management system supports dual provisioning paths.
+
+\subsection{2.2.1 RouterOS Architecture}
+
+According to Kurose and Ross (2021), the RouterOS API protocol is synchronous and message-based such that each command sent corresponds to a structured reply containing response states, data values, or errors. Studies about network device automation note that lightweight APIs that closely resemble device CLIs often reduce the learning curve for operators (Kurose \& Ross, 2021). The RouterOS API adheres to this pattern by using CLI-like commands and parameters.
+
+Automation communities widely adopt this API for tasks such as provisioning, user management, hotspot control, and firewall automation (Wijaya et al., 2020). The API's resilience and low overhead makes it suitable for embedded devices including low-power MikroTik models with limited CPU resources.
+
+However, the API has several limitations. It is a proprietary protocol that lacks native JSON structures, its authentication mechanisms have evolved across versions (from plaintext to challenge-response), and its implementation quality can be inconsistent depending on the device's RouterOS version (MikroTik, 2024).
+
+\subsection{2.2.2 RouterOS REST/JSON Interface}
+
+Starting with RouterOS v7, MikroTik introduced a REST interface that wraps the console API using HTTP(S) with JSON payloads (MikroTik, 2022). This aligns RouterOS with modern web service infrastructure and simplifies integration with cloud backend servers. REST interfaces are commonly preferred because they require minimal protocol parsing, fit naturally into microservices ecosystems, and allow stateless interactions (Fielding, 2000).
+
+However, RouterOS REST adoption is inconsistent. Many deployed devices, especially in developing regions, still run RouterOS v6 or older hardware incapable of RouterOS v7. This creates an interoperability gap where systems must support dual provisioning paths.
+
+The literature on network automation emphasizes the importance of multi-version compatibility in distributed network environments (Schmidt \& Wuttke, 2019). Thus, any management system must incorporate fallback mechanisms when REST is unavailable.
+
+\section{2.3 WireGuard for CGNAT Traversal and Remote Access}
+
+WireGuard is a modern, cryptography-focused VPN protocol based on the Noise protocol framework with a minimal code footprint (Donenfeld, 2020). Its simplicity, performance, and strong cryptographic properties have resulted in widespread industry adoption.
+
+\subsection{2.3.1 Principles of WireGuard Operation}
+
+WireGuard itself is UDP-based and does not ``punch through'' all types of NAT automatically. However, when the client (router) initiates an outbound WireGuard connection to a public endpoint (VPS or relay), the tunnel will traverse CGNAT in most typical deployments if PersistentKeepalive is set to maintain NAT state. This is the common, practical solution used in many guides and deployments.
+
+Academic analysis shows WireGuard outperforms legacy VPN protocols, reducing overhead by up to 60\% compared to OpenVPN (Wright \& Samuels, 2021). Its statelessness between handshakes makes it resilient to IP changes --- critical when routers reside behind mobile broadband networks with dynamic addressing.
+
+\subsection{2.3.2 CGNAT Traversal using WireGuard}
+
+A major challenge in remote router access is Carrier-Grade NAT, which prevents inbound connections from the operator to the router. WireGuard does not perform NAT traversal in the STUN/TURN/WebRTC sense. Instead, it relies on the client initiating an outbound session to a public server. When the router behind CGNAT sends an initial packet to a public WireGuard endpoint, the NAT table records the connection and incoming packets from the server are accepted as part of the established NAT session.
+
+Setting persistent keepalive ensures NAT bindings remain active (WireGuard Documentation, 2023). This is the de facto NAT traversal strategy adopted by nearly all production WireGuard deployments (Mason, 2020).
+
+\subsection{2.3.3 Limitations and NAT Pathologies}
+
+Symmetric NATs and highly restrictive carrier middleboxes can cause issues; frequent IP/port changes (mobile networks) can temporarily break the tunnel until keepalives or re-handshakes occur. Robust tooling must surface handshake times and re-establishment behaviour. Community Q\&A and troubleshooting threads note these operational realities and mitigation practices (keepalives, short re-try timers).
+
+\section{2.4 MikroTik Back-To-Home (BTH)}
+
+MikroTik's Back-To-Home is a built-in convenience feature that configures a secure VPN (WireGuard-based) and optionally leverages MikroTik relays to provide reachability even when the device lacks a public IP. It simplifies end-user setup but has device and RouterOS version prerequisites and relies on MikroTik infrastructure (MikroTik, 2023).
+
+BTH is easy for end-users but reduces operator control (vendor relays, closed workflows) and is constrained by hardware/RouterOS versions that support the feature.
+
+\subsection{2.4.1 BTH Architecture and Operation}
+
+This VPN automates key pair generation, peer setup, routing configuration, NAT rules, and relay selection if no public IP exists. The system provides consumer-friendly remote access with minimal technical knowledge. Vendor literature describes BTH as a one-click remote access solution intended for home or small office users.
+
+\subsection{2.4.2 Limitations of BTH}
+
+Literature and community discussions highlight several constraints (MikroTik, 2023; Sokolov \& Komarov, 2022):
+
+\textbf{Vendor Dependency} --- Relay servers remain under MikroTik control unless the user manually overrides them.
+
+\textbf{Limited Customisation} --- Operators cannot fully customise NAT traversal strategies or telemetry.
+
+\textbf{Version Constraints} --- Only RouterOS 7+ devices support BTH, excluding older and widely deployed RouterBOARD models.
+
+\textbf{Scale Limitations} --- BTH workflows are designed for individual users, not large-scale operators managing hundreds or thousands of routers.
+
+Forum threads frequently note issues with reliability on certain mobile networks and point out the inability to integrate BTH into third-party automation platforms. From an engineering perspective, BTH focuses on ease of use, not operator-level programmability.
+
+\section{2.5 The Rust Ecosystem}
+
+\subsection{2.5.1 Why Rust for Network Automation}
+
+According to Klabnik \& Nichols (2018), Rust is a systems programming language designed for memory safety, high performance, and concurrency without garbage collection. These qualities make it ideal for secure backend systems and network control applications. Rust's compile-time memory safety guarantees prevent common vulnerabilities like buffer overflows and data races, which is critical for systems managing security-sensitive network configurations (Davidson et al., 2021).
+
+Comparative studies show Rust outperforms Go and Python in CPU-bound and crypto-heavy workloads while providing deterministic memory safety (Davidson et al., 2021). This makes Rust a natural fit for WireGuard provisioning and server-side key lifecycle management.
+
+\subsection{2.5.2 RouterOS Rust Crates}
+
+Community crates such as \texttt{mikrotik-rs}, \texttt{mikrotik}, and other API clients exist and provide async access to RouterOS devices. These crates reduce the effort of implementing the RouterOS protocol and are suitable starting points for a Rust backend.
+
+These libraries abstract binary protocol parsing, manage authentication, and provide async support via Tokio. Their adoption demonstrates the viability of Rust-based RouterOS automation, though crate maturity varies.
+
+\subsection{2.5.3 WireGuard Control in Rust}
+
+Multiple crates and bindings are available (\texttt{wireguard-control}, \texttt{wgctrl}, \texttt{wireguard\_control\_sys}). They offer ways to programmatically create/delete peers and apply interface configurations from userland or via kernel APIs --- critical for server-side peer lifecycle management.
+
+\section{2.6 Integration of Cloud Backends with Local Networks using Mobile Devices}
+
+Modern distributed systems increasingly depend on seamless and reliable communication between cloud-based services and devices operating within private, user-controlled local area networks (LANs). Conventional methods for establishing this connectivity have traditionally relied on network-level configurations, including VPNs, port forwarding, or the assignment of static public IP addresses (Kurose \& Ross, 2021). While effective, these approaches present significant usability and security challenges for non-technical users (Sahu \& Misra, 2020).
+
+To address these limitations, recent architectural paradigms have explored the use of mobile edge devices --- particularly smartphones --- as intelligent intermediaries between the cloud and the local network. These devices are uniquely positioned for this role, as they inherently possess LAN visibility through Wi-Fi connectivity and are equipped with robust application frameworks that support background services, persistent cloud connections, and local device discovery (Google, 2023).
+
+This approach is widely applied in domains including:
+
+\begin{itemize}
+  \item Internet of Things (IoT) device management and smart-home hubs
+  \item Remote diagnostics and monitoring systems
+  \item Network scanning and hotspot analytics
+  \item Remote technical support (e.g., TeamViewer, AnyDesk)
+\end{itemize}
+
+Instead of requiring inbound connections from the cloud to the LAN, the smartphone creates outbound secure connections to the backend, bypassing NAT, firewalls, and ISP restrictions. At the same time, it can interact with LAN devices via ARP discovery, ICMP probing, UPnP, and mDNS protocols (Kurose \& Ross, 2023).
+
+\section{2.7 Related Academic \& Practical Work}
+
+A wealth of practical guides and blog posts detail the common architectural pattern used in this project: a public VPS as a WireGuard rendezvous point, configured with PersistentKeepalive and appropriate routing/firewall rules (DigitalOcean, 2023; AWS Documentation, 2023). These resources are invaluable for operational details. Furthermore, community reports on forums and GitHub document real-world edge cases, such as keepalive effectiveness on mobile networks, reinforcing the need for robust monitoring and automated reconciliation logic in a production system.
+
+\section{2.8 Identified Gaps}
+
+The review of existing literature and solutions reveals clear gaps:
+
+\subsection{2.8.1 Lack of a Programmable, Self-Hosted Solution}
+
+While vendor solutions like BTH are convenient, they create lock-in and lack programmability. There is a clear gap for an operator-owned system that integrates RouterOS APIs with a self-hosted WireGuard rendezvous service.
+
+\subsection{2.8.2 Absence of a Production-Grade, Integrated Toolchain}
+
+While guides and individual crates exist, there is a scarcity of open-source, production-ready solutions that combine RouterOS automation, WireGuard server lifecycle management, and database-backed monitoring in a single, coherent package.
+
+\subsection{2.8.3 Insufficient Focus on Operational Telemetry and Robustness}
+
+Community threads emphasize operational failures. This project contributes by designing for first-class telemetry (e.g., handshake timestamps, keepalive health) and features for automated reconciliation to ensure service continuity.
+
+\section{2.9 How the Literature Informs Our Methodology}
+
+The literature directly informs the methodological approach for this project.
+
+\subsection{2.9.1 Dual-Provisioning Paths}
+
+The system architecture supports both the legacy RouterOS API (for v6) and the modern REST API (for v7+) to ensure broad compatibility.
+
+\subsection{2.9.2 Canonical CGNAT Traversal}
+
+The system implements the established pattern of client-initiated tunnels maintained with PersistentKeepalive. It is instrumented to monitor handshake status and peer endpoints for operational troubleshooting.
+
+\subsection{2.9.3 Leverage Proven Rust Crates}
+
+The implementation builds upon existing, mature Rust crates (e.g., \texttt{mikrotik-rs} for API communication, \texttt{wgctrl} for WireGuard control) to accelerate development and enhance robustness.
+
+% ============================================================
+%  CHAPTER 3
+% ============================================================
+\chapter{CHAPTER 3: METHODOLOGY}
+
+\section{3.1 Introduction}
+
+This chapter outlines the design, development, and evaluation methodology used in implementing the Rust-based backend system for managing MikroTik routers behind Carrier-Grade NAT (CGNAT). The methodology is structured into phases that include system analysis, design, implementation, testing, and evaluation.
+
+\section{3.2 System Design Approach}
+
+This project follows a modular and iterative development approach using the Agile methodology, where each core component (RouterOS API integration, WireGuard backend, database layer, and management interface) is developed and tested independently before full system integration.
+
+\section{3.3 System Architecture}
+
+This system architecture comprises four major components:
+
+\subsection{3.3.1 Rust Backend Service}
+
+Rust acts as the central controller for automating router provisioning and tunnel management, user authentication, and device management. This backend communicates with MikroTik routers via the RouterOS API/REST interface and manages WireGuard server configurations and peer creation on a public endpoint.
+
+\subsection{3.3.2 RouterOS Devices}
+
+These are routers that serve as clients initiating outbound WireGuard tunnels to the public server, allowing connectivity beyond CGNAT restrictions.
+
+\subsection{3.3.3 WireGuard Public Endpoint}
+
+This is configured on the Ubuntu kernel environment as an Elastic Cloud Compute instance from Amazon Web Services. A public IP from this instance is used to route all user traffic, hence it acts as the rendezvous point for all router tunnels.
+
+\subsection{3.3.4 Database and Web Interface}
+
+This is used to store user data, router metadata, WireGuard keys, tunnel information, and peer status. It is also launched from AWS PostgreSQL database services and provides an interface for administrators to monitor and manage routers.
+
+The ER diagram of the database schema is accessible at \href{https://terraconnect-er-diagram.web.app}{https://terraconnect-er-diagram.web.app}.
+
+\subsection{3.3.5 Android as a Network Bridge}
+
+Since the backend cannot directly communicate with the local network, an Android application is developed using Kotlin. This application establishes a persistent, secure WebSocket connection to the backend server, supporting real-time bidirectional data exchange.
+
+When connected to a user's Wi-Fi network, the application can interact with the LAN and perform LAN discovery using ARP table parsing, ICMP ping sweeps, and mDNS/UPnP protocols. Commands issued by the backend --- such as device scanning, status retrieval, and configuration updates --- are received via the WebSocket client, executed locally, and results returned to the server.
+
+\section{3.4 System Requirements and Analysis}
+
+\begin{itemize}
+  \item The system must connect to and authenticate with MikroTik routers via RouterOS API or REST, and a handshake must be obtained from the WireGuard interface on EC2.
+  \item It must generate and assign WireGuard key pairs for each router.
+  \item It should automatically create and configure WireGuard peers on both the server and routers.
+  \item The system must allow monitoring of peer status, last handshake, and tunnel uptime.
+  \item The system should persist router and tunnel details in a database.
+\end{itemize}
+
+\section{3.5 Development Tools and Technologies}
+
+\textbf{Table 3.1: Development Tools, Technologies, and Frameworks Adopted in the TerraConnect Uganda System}
+
+\vspace{0.3cm}
+This table shows all the development tools, technologies, and their purposes as listed below.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Development Tools, Technologies, and Frameworks Adopted in the TerraConnect Uganda System}
+  {\small
+  \begin{tabular}{|p{3.44cm}|p{2.82cm}|p{8.00cm}|}
+    \hline
+    \textbf{Component} & \textbf{Technology} & \textbf{Purpose} \\
+    \hline
+    Programming Language & Rust & Backend development (memory safety and concurrency) \\
+    RouterOS API Library & mikrotik\_rs crate & Communication with RouterOS \\
+    WireGuard Control & wireguard-control & Programmatic management of WireGuard peers and interfaces \\
+    Web Framework & Axum & RESTful backend API interface \\
+    Database & PostgreSQL & Storing user, router, and peer data \\
+    Frontend & React.js & UI management interface \\
+    Host Environment & AWS EC2 & WireGuard public endpoint and backend hosting \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+One of the most critical components is the backend service, which is developed using Rust to leverage its key performance advantages: the absence of garbage collection, guaranteed memory safety, and robust concurrency support. These characteristics enable the backend to efficiently handle multiple simultaneous operations, including user authentication, rate limiting, router monitoring, and all database interactions.
+
+The \textbf{RouterOS API} library streamlines the integration of router management features directly into the Rust binary, eliminating the need for manual low-level communication with the router and allowing the backend to interact with RouterOS devices programmatically and efficiently.
+
+WireGuard is a modern, high-performance VPN protocol integrated into the system to provide secure, encrypted tunnels between the router and connected clients. Built directly into the Linux kernel, it offers significantly lower latency and reduced overhead compared to traditional VPN solutions such as OpenVPN and IPSec.
+
+Axum is a lightweight, asynchronous web framework built on top of the Tokio runtime and the Tower middleware ecosystem. It serves as the primary HTTP layer of the backend, responsible for handling incoming API requests, routing, and middleware execution.
+
+PostgreSQL is a powerful, open-source relational database management system used to store and manage all persistent application data. Its support for ACID-compliant transactions ensures data integrity and consistency. Within this system, PostgreSQL is accessed via SQLx, a compile-time verified asynchronous SQL library for Rust.
+
+React.js is a widely adopted, component-based JavaScript library used to build the system's user interface. Its virtual DOM mechanism ensures efficient rendering and a seamless user experience across different devices and screen sizes.
+
+Amazon EC2 (Elastic Compute Cloud) provides the cloud hosting environment on which the backend service and associated infrastructure are deployed. Within this system, EC2 hosts the Rust binary, PostgreSQL database, and WireGuard VPN service.
+
+\section{3.6 Implementation Procedure}
+
+\subsection{3.6.1 Environmental Setup}
+
+\begin{itemize}
+  \item Install Rust toolchain, PostgreSQL, and WireGuard on a Linux VPS.
+  \item Configure RouterOS API access on MikroTik test devices and enable the WireGuard interface.
+\end{itemize}
+
+\subsection{3.6.2 Backend Development}
+
+Development of a Rust service using Axum to expose REST endpoints such as:
+
+\begin{itemize}
+  \item \texttt{/api/add\_router} --- registers router details and generates WireGuard keys.
+  \item \texttt{/api/create\_peer} --- adds WireGuard peer configuration on the server.
+  \item \texttt{/api/monitor} --- fetches status, last handshake, and data usage.
+\end{itemize}
+
+Implementation and integration of the \texttt{mikrotik-rs} crate to send API commands to routers for:
+
+\begin{itemize}
+  \item Creating a WireGuard interface.
+  \item Adding peer configuration with server public key, endpoint, and allowed IPs.
+  \item Enabling \texttt{persistent-keepalive=25} to maintain NAT traversal.
+\end{itemize}
+
+\subsection{3.6.3 Database Development}
+
+Usage of the \texttt{sqlx} crate for database interaction to manage user data, router records, and peer information.
+
+Schema includes tables as shown at the ER diagram at \href{https://terraconnect-er-diagram.web.app}{https://terraconnect-er-diagram.web.app}.
+
+\subsection{3.6.4 WireGuard Server Integration}
+
+We use \texttt{wireguard-control} or CLI (\texttt{wg}) to:
+
+\begin{itemize}
+  \item Create the WireGuard interface on the VPS.
+  \item Add new peers dynamically from the backend.
+\end{itemize}
+
+NAT/masquerading is configured on the server to route traffic between tunnels and external networks. Background workers (async tasks) periodically query:
+
+\begin{itemize}
+  \item RouterOS \texttt{/interface/wireguard/peers/print} for live status.
+  \item \texttt{wg show} on the VPS for last handshake and bytes transferred.
+  \item Logs are stored in the database and displayed via the web dashboard.
+\end{itemize}
+
+\subsection{3.6.5 Security Tightening}
+
+\begin{itemize}
+  \item TLS is used for backend API communication and JWT tokens for authentication.
+  \item Stored private keys are encrypted using symmetric encryption (Curve25519).
+  \item Router API credentials are limited with least privileges and session-based logins.
+  \item JWT tokens and SSL-certified domains ensure secure endpoints.
+\end{itemize}
+
+\section{3.7 Testing and Evaluation}
+
+\subsection{3.7.1 Testing Setup}
+
+Testing utilises two MikroTik routers: one on a public IP, one behind CGNAT (LTE network), and a VPS running WireGuard and the Rust backend. Controlled testing scenarios include:
+
+\begin{itemize}
+  \item Direct access vs CGNAT access.
+  \item Connection drop and automatic reconnection.
+  \item Multiple router registration and tunnel establishment.
+\end{itemize}
+
+\subsection{3.7.2 Evaluation Metrics}
+
+\textbf{Table 3.2: Evaluation Metrics for VPN Tunnel Performance}
+
+\vspace{0.3cm}
+The following metrics are used to assess the performance, reliability, and efficiency of the WireGuard VPN tunnel under real-world network conditions, particularly in environments constrained by Carrier-Grade NAT (CGNAT).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Evaluation Metrics for VPN Tunnel Performance}
+  {\small
+  \begin{tabular}{|p{3.21cm}|p{10.00cm}|}
+    \hline
+    \textbf{Metric} & \textbf{Description} \\
+    \hline
+    Tunnel Availability & Percentage of uptime maintained under CGNAT conditions \\
+    Latency & Round-trip delay of responses transmitted across the tunnel \\
+    Throughput & Data transfer rate achieved between routers during active sessions \\
+    Reconnection Time & Time taken for the tunnel to recover and complete a handshake after network loss \\
+    CPU Usage & RouterOS resource utilisation and kernel load during active tunnel operation \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{3.7.3 Comparison Benchmark}
+
+Comparisons between the developed system and MikroTik's Back-To-Home feature in terms of:
+
+\begin{itemize}
+  \item Setup complexity
+  \item Scalability
+  \item Control and flexibility
+  \item Dependency on vendor relays
+\end{itemize}
+
+\subsection{3.7.4 Data Analysis}
+
+Collected metrics (availability, latency, throughput) are averaged and compared across scenarios using tabular and graphical summaries. Qualitative analysis is applied to evaluate system usability, security, and scalability relative to existing vendor solutions.
+
+\textbf{Expected Outcomes}
+
+\begin{itemize}
+  \item Reliable remote management of MikroTik routers even when behind CGNAT.
+  \item Secure and automated provisioning of WireGuard tunnels via the Rust backend.
+  \item A reusable backend framework for future ISP and enterprise integrations.
+  \item Comparative data showing performance advantages over static IP or BTH setups.
+\end{itemize}
+
+% ============================================================
+%  CHAPTER 4
+% ============================================================
+\chapter{CHAPTER 4: RESEARCH METHODOLOGY}
+
+\section{4.1 Research Theme and Focus}
+
+This research is centred on investigating the technical challenges of remote router management imposed by Carrier-Grade NAT (CGNAT) and evaluating the limitations of existing solutions. A primary focus is the analysis of MikroTik's Back-To-Home (BTH) VPN, which, while a step forward, is not universally supported across all device models and RouterOS versions, creating a significant gap in manageability (MikroTik, 2023).
+
+Consequently, this project investigates the design, implementation, and performance of a novel, Rust-driven management system. The proposed system is designed to be inclusive, catering to any MikroTik device running RouterOS v7 or higher, as these versions natively support the WireGuard protocol essential for our solution. The research further explores the synergistic integration of modern technologies --- specifically, the Rust programming language for backend services, the WireGuard protocol for secure tunnelling, and a React.js frontend for user interaction --- to enhance security, reduce latency, and ensure scalability in remote router management.
+
+\section{4.2 Technology Justification: The Rust Programming Language}
+
+The selection of Rust as the primary implementation language for the backend system is a deliberate choice grounded in its distinct advantages for building robust, high-performance network services. The justification is threefold, focusing on performance, reliability, and developer productivity.
+
+\subsection{4.2.1 Performance}
+
+Rust is architected for speed and memory efficiency. As a compiled language without a runtime or garbage collector, it delivers performance comparable to C and C++ (Davidson et al., 2021). This characteristic is critical for the performance-sensitive task of handling concurrent WireGuard tunnels and managing multiple RouterOS API connections simultaneously.
+
+\subsection{4.2.2 Reliability}
+
+Rust's most significant contribution is its ability to enforce memory and thread safety at compile time through its innovative ownership and borrowing system. This model guarantees the absence of common, severe vulnerabilities such as buffer overflows, use-after-free errors, and data races (Klabnik \& Nichols, 2018). For a system responsible for managing network security and router configurations, this compile-time guarantee is invaluable.
+
+\subsection{4.2.3 Productivity}
+
+Despite its power, Rust is designed for a productive developer experience. It features comprehensive documentation, a world-class compiler with clear, actionable error messages, and a top-tier tooling ecosystem (Rust Foundation, 2024). The integrated package manager and build tool, Cargo, simplifies dependency management and project orchestration.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image2.png}
+  \caption{Rust ecosystem overview diagram}
+\end{figure}
+
+\section{4.3 Why Use WireGuard?}
+
+\subsection{4.3.1 Introduction}
+
+WireGuard is an extremely simple yet fast and modern VPN that utilises state-of-the-art cryptography. It aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding excessive complexity. It is designed as a general-purpose VPN for running on embedded interfaces and supercomputers alike. Initially released for the Linux kernel, it is now cross-platform and widely deployable (WireGuard Documentation, 2025).
+
+\subsection{4.3.2 Simple and Easy to Use}
+
+WireGuard aims to be as easy to configure and deploy as SSH. A VPN connection is made simply by exchanging public keys --- exactly like exchanging SSH keys --- and all the rest is transparently handled by WireGuard. It is even capable of roaming between IP addresses, similar to Mosh. WireGuard presents an extremely basic yet powerful interface.
+
+\subsection{4.3.3 Cryptographically Sound}
+
+WireGuard uses state-of-the-art cryptography including the Noise protocol framework, Curve25519, ChaCha20, Poly1305, BLAKE2, SipHash24, and HKDF. It makes conservative and reasonable choices and has been reviewed by cryptographers.
+
+\subsection{4.3.4 Minimal Attack Surface}
+
+WireGuard has been designed with ease-of-implementation and simplicity in mind. It is meant to be easily implemented in very few lines of code and easily auditable for security vulnerabilities. Compared to IPsec or OpenVPN, WireGuard is comprehensively reviewable by single individuals.
+
+\subsection{4.3.5 High Performance}
+
+A combination of extremely high-speed cryptographic primitives and the fact that WireGuard lives inside the Linux kernel means that secure networking can be very high-speed. It is suitable for both small embedded devices like smartphones and fully loaded backbone routers like MikroTik.
+
+\section{4.4 Why React.js + Vite?}
+
+\subsection{4.4.1 Introduction}
+
+React.js is a JavaScript library for rendering user interfaces. UI is built from small units like buttons, text, and images. React lets you combine them into reusable, nestable components. From websites to phone apps, everything on the screen can be broken down into components (React.js Documentation, 2025).
+
+Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
+
+\begin{itemize}
+  \item A dev server that provides rich feature enhancements over native ES modules, including extremely fast Hot Module Replacement (HMR).
+  \item A build command that bundles code with Rollup, pre-configured to output highly optimised static assets for production.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image3.png}
+  \caption{TerraConnect Uganda Admin Dashboard --- Router Management Overview}
+\end{figure}
+
+\textbf{Figure 4.6: TerraConnect Uganda Admin Dashboard --- Router Management Overview}
+
+The web dashboard displays the router management interface, showing two registered routers with their respective VPN IP addresses, hotspot user counts, and online/offline connectivity status, alongside administrative modules for user management, revenue analytics, fee management, and system broadcasts. The dashboard is developed using \textbf{React.js} and \textbf{Vite}, serving as the primary frontend interface. It presents a modern, responsive, and intuitive web experience built with \textbf{Tailwind CSS}. The interface is accessible via \href{https://terraconnect-uganda.web.app}{https://terraconnect-uganda.web.app} and deployed on \textbf{Firebase Hosting}.
+
+\section{4.5 Why This Project?}
+
+The imperative for this project stems from the critical and growing challenges network administrators and ISPs face in managing routers deployed behind CGNAT. This is particularly acute for MikroTik routers that are ineligible for vendor-specific solutions like BTH, often due to hardware limitations or RouterOS version constraints (MikroTik, 2023).
+
+This project is significant because it delivers a self-hosted, secure, and highly automated solution. By integrating the performance and safety of a Rust-based backend, the efficient cryptography of WireGuard tunnels, and the programmability of the RouterOS API, the system inverts the traditional connection model --- enabling routers behind CGNAT to initiate secure, persistent outbound connections to a central operator-controlled server.
+
+\subsection{4.5.1 A Synergistic Technological Integration}
+
+It demonstrates a practical and powerful synergy between modern technologies --- leveraging Rust for backend safety and performance, WireGuard for lightweight secure tunnels, and the RouterOS API for automation --- to solve a pressing real-world network challenge.
+
+\subsection{4.5.2 Enhanced Security Posture}
+
+The system ensures all management traffic is secured with end-to-end encryption via WireGuard, minimising the attack surface (Ashraf \& Latif, 2020).
+
+\subsection{4.5.3 Cost-Effectiveness and Autonomy}
+
+It significantly reduces operational expenditures and vendor dependency by eliminating the need for paid cloud relay services or static public IPs.
+
+\subsection{4.5.4 Addressing a Regional and Global Need}
+
+It provides a practical, deployable solution for regions like Uganda, where CGNAT is increasingly common due to IPv4 scarcity.
+
+\subsection{4.5.5 Educational and Developmental Contribution}
+
+As an implementation that bridges systems programming, network security, and automation, it serves as a valuable case study and a source of hands-on experience for students and developers in these high-demand fields.
+
+% ============================================================
+%  CHAPTER 5
+% ============================================================
+\chapter{CHAPTER 5: TESTING AND RESULTS}
+
+\section{5.1 Unit Testing}
+
+Unit testing in this project is carried out at the modular level targeting individual handler functions, utility logic, and domain-specific business rules in isolation from the network and database. The backend is written in Rust using the Axum web framework and leverages the language's built-in \texttt{\#[test]} and \texttt{\#[tokio::test]} attributes for asynchronous and synchronous test cases respectively.
+
+\subsection{5.1.1 Test Infrastructure}
+
+A centralised \texttt{helpers.rs} module located in the tests folder provides shared setup and teardown primitives used across all test files.
+
+\textbf{Table 5.1: Integration Test Helper Functions and Their Purposes}
+
+\vspace{0.3cm}
+The table below outlines the key helper functions used within the integration testing framework to ensure a controlled, reproducible, and isolated testing environment. The test database is isolated from production and migrations run automatically before each test pool is created, ensuring schema consistency. Each test invokes \texttt{cleanup()} both before and after execution, preventing state leakage between tests that share the same database.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Integration Test Helper Functions and Their Purposes}
+  {\small
+  \begin{tabular}{|p{3.07cm}|p{10.00cm}|}
+    \hline
+    \textbf{Helper Function} & \textbf{Purpose} \\
+    \hline
+    \texttt{create\_test\_pool()} & Connects to a dedicated test PostgreSQL database via \texttt{TEST\_DATABASE\_URL} and runs all pending SQLx migrations automatically \\
+    \texttt{build\_test\_app()} & Spins up the full Axum router in-process using \texttt{axum\_test::TestServer} with no external server required \\
+    \texttt{seed\_owner()} & Inserts a verified ISP owner user into the database and returns a JWT via a real login call \\
+    \texttt{seed\_agent()} & Creates a reseller agent under a given owner and returns a JWT, mirroring production creation \\
+    \texttt{cleanup()} & Performs a cascading delete of all test-domain data across all foreign-key-dependent tables \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\subsection{5.1.2 Authentication Unit Tests}
+
+The user authentication module contains 12 unit/integration tests covering the complete login and identity verification lifecycle.
+
+\textbf{Login Scenarios}
+
+\textbf{Table 5.2: Integration Test Cases --- User Login Scenarios}
+
+\vspace{0.3cm}
+The following table outlines the integration test cases designed to validate the authentication endpoint under varying input conditions, ensuring the system responds correctly to both valid and invalid login attempts.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Integration Test Cases --- User Login Scenarios}
+  {\small
+  \begin{tabular}{|p{4.60cm}|p{4.97cm}|p{5.43cm}|}
+    \hline
+    \textbf{Test} & \textbf{Input Condition} & \textbf{Expected Outcome} \\
+    \hline
+    \texttt{test\_user\_login\_success} & Valid email and password & HTTP 200 --- access token and refresh token returned \\
+    \texttt{test\_user\_login\_wrong\_credentials} & Valid email, incorrect password & HTTP 401 Unauthorized \\
+    \texttt{test\_user\_login\_inactive\_user} & User account status set to blocked & HTTP 403 Forbidden \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+\textbf{Postman Login Demonstration}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image4.png}
+  \caption{Postman API Test: Successful User Login Response (HTTP 200)}
+\end{figure}
+
+The screenshot shows a successful \texttt{POST} request to the \texttt{/auth/login} endpoint, returning an HTTP 200 OK response containing a JWT access token, refresh token, and a \texttt{requires\_profile\_update} flag, confirming correct authentication behaviour of the Rust backend.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image5.png}
+  \caption{Postman API Test: Failed Login Response (HTTP 401 Unauthorized)}
+\end{figure}
+
+The screenshot demonstrates the backend's response to a \texttt{POST} request submitted with incorrect credentials to the \texttt{/auth/login} endpoint, returning an HTTP 401 Unauthorized status with an ``Invalid credentials'' error message.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image6.png}
+  \caption{Postman API Test: Blocked Account Login Response (HTTP 403 Forbidden)}
+\end{figure}
+
+The screenshot demonstrates the backend's response to a login attempt by a deactivated user account, returning an HTTP 403 Forbidden status with an ``Account has been deactivated'' error message, confirming that the system correctly enforces access restrictions on blocked or inactive accounts.
+
+\subsection{5.1.3 Router Onboarding Logic via the TerraConnect Uganda Mobile Application}
+
+This section presents the results of the implementation of the router onboarding subsystem of the TerraConnect Uganda management platform.
+
+The onboarding process enables WISP operators to register their routers into the platform directly from an Android mobile application, after which the router is provisioned into an encrypted VPN tunnel managed by the server.
+
+\textbf{Overview of the Onboarding Architecture}
+
+The router onboarding process was designed to satisfy two distinct deployment realities encountered during fieldwork in Uganda.
+
+\textbf{Public IP Deployment} --- The router is directly reachable over the internet via a public IP address. The backend can connect to it autonomously to verify its identity and push configuration.
+
+\textbf{CGNAT/Private IP Deployment} --- The router sits behind a Carrier-Grade NAT or a local LAN --- the dominant scenario for small WISPs. In this case the mobile application acts as the configuration bridge.
+
+\textbf{The Full Onboarding Sequence}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image7.png}
+  \caption{System Architecture: Router Provisioning and WireGuard Tunnel Establishment}
+\end{figure}
+
+\textbf{Figure 5.3: System Architecture --- Router Provisioning and WireGuard Tunnel Establishment}
+
+The figure illustrates the end-to-end flow of router provisioning within the TerraConnect Uganda system. The process is initiated from the Android (Kotlin) application, which submits a \texttt{POST /routers} request to the Rust backend via REST/HTTPS. The backend validates the user token, verifies the subscription, generates a WireGuard key pair, assigns a VPN IP address within the \texttt{10.0.0.0/8} subnet, and persists the router record in the PostgreSQL database. A RouterOS configuration script is then returned to the mobile application, which pushes it directly to the MikroTik router via the MikroTik API on port 8728 over a local LAN connection. Upon successful script execution, the MikroTik router establishes an encrypted WireGuard tunnel to the WireGuard server (\texttt{wg-terraconnect}) over UDP port 51820, completing the secure provisioning process.
+
+\subsubsection{5.1.3.1 Onboarding Process}
+
+\textbf{User Authentication} --- Before any router can be registered, the operator must authenticate via the mobile application. The backend issues a JWT upon successful login. Unauthenticated onboarding attempts return HTTP 401 Unauthorized.
+
+\textbf{Device Identity Resolution} --- The backend resolves the router identity differently depending on the network topology detected from the \texttt{real\_ip} field supplied by the mobile application. When the \texttt{real\_ip} value is detected as a private address (RFC 1918 ranges: \texttt{10.0.0.0/8}, \texttt{172.16.0.0/12}, \texttt{192.168.0.0/16}), the backend automatically switches to app-assisted onboarding:
+
+\begin{itemize}
+  \item The application reads the router's serial number locally via the MikroTik API over the device's LAN connection.
+  \item The serial number is included in the registration payload as \texttt{serial\_number}.
+  \item The backend accepts this as proof of physical access to the device; no direct connection to the router is attempted from the server.
+\end{itemize}
+
+If the serial number is absent in a NAT onboarding request, the backend returns HTTP 400 Bad Request. This is a deliberate design decision to prevent registration of phantom or incorrectly identified devices.
+
+\textbf{Demonstration of the Onboarding Process}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=7.43cm]{media/image8.jpeg}
+  \caption{Router Verification Screen: Add Router Workflow}
+\end{figure}
+
+\textbf{Figure 5.4: Router Verification Screen --- Add Router Workflow}
+
+The screen displays the auto-detected hardware details of a MikroTik router (RB2011UiAS-2HnD) prior to registration, allowing the user to review device information including RouterOS version, CPU load, memory, and public IP before proceeding to WireGuard setup.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=6.39cm]{media/image9.jpeg}
+  \caption{Setup Completion Screen: WireGuard Tunnel Configured Successfully}
+\end{figure}
+
+\textbf{Figure 5.5: Setup Completion Screen --- WireGuard Tunnel Configured Successfully}
+
+The screen confirms the successful completion of the router registration and WireGuard tunnel configuration process, prompting the user to proceed to the dashboard where the router will appear online within the next polling interval.
+
+\textbf{WireGuard Key Pair Generation and VPN IP Assignment}
+
+Upon passing all validations, the backend generates a unique WireGuard key pair for the router using the X25519 Diffie-Hellman algorithm via the \texttt{x25519-dalek} crate. An internal VPN IP address from the \texttt{10.0.0.0/8} subnet is dynamically assigned, supporting up to 16.7 million concurrent routers. A unique WireGuard listen port is also randomly generated in the range 13000--60000 for each router, reducing NAT traversal collisions in environments where multiple routers share the same upstream public IP. These values are persisted to the \texttt{routers} table in PostgreSQL atomically within a single \texttt{INSERT} transaction.
+
+\textbf{Summary of Onboarding Results}
+
+The router onboarding subsystem of TerraConnect Uganda was successfully implemented and verified across all planned scenarios. The system correctly enforces authentication, device identity, and duplicate prevention. For NAT-deployed routers --- the most common case in the Ugandan context --- the Kotlin mobile application serves as a secure local configuration bridge, returning a MikroTik RouterOS script that the app pushes directly to the device. Upon completion, the router is registered in the central PostgreSQL database, provisioned as a WireGuard VPN peer, and immediately begins reporting live status metrics to the management dashboard.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=13.97cm]{media/image10.png}
+  \caption{WireGuard Server Peer Status Output}
+\end{figure}
+
+\textbf{Figure 5.6: WireGuard Server Peer Status Output}
+
+The terminal output displays the live status of three active WireGuard peers, showing each peer's public key, endpoint IP address, assigned VPN IP, time since last handshake, data transfer statistics, and persistent keepalive interval, confirming successful tunnel establishment across multiple connected routers.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{media/image11.png}
+  \caption{ICMP Ping Test: VPN Tunnel Latency Verification}
+\end{figure}
+
+\textbf{Figure 5.7: ICMP Ping Test --- VPN Tunnel Latency Verification}
+
+The terminal output shows the results of a ping test conducted to VPN peer \texttt{10.0.0.104} across the WireGuard tunnel. All 13 packets were transmitted and received successfully, recording 0\% packet loss with a consistent round-trip time averaging 175.08\,ms, confirming stable and reliable tunnel connectivity.
+
+\section{5.2 Integration Testing}
+
+Integration tests exercise the full HTTP request/response cycle through the real Axum router, against a live PostgreSQL database with real JWT middleware, real password hashing, and real database writes. These tests are the primary mechanism for verifying that all system layers interact correctly end to end.
+
+\section{5.3 System Testing}
+
+The system is designed for concurrent multi-tenant workloads. The PostgreSQL connection pool is configured to accept 50 maximum connections, 5 minimum connections, 10 seconds acquisition timeout, and 600 seconds idle timeout. Multiple tests were conducted to validate this configuration.
+
+\section{5.4 User Acceptance Testing}
+
+User acceptance testing was conducted with over 14 stakeholder groups corresponding to the system's roles.
+
+\textbf{User/Admin (primary role)}
+
+Users interact with the system through the React frontend and were asked to perform the following workflow tasks:
+
+\textbf{Table 5.3: Usability Testing Results Summary}
+
+\vspace{0.3cm}
+The table below presents the outcomes of usability testing conducted on core system functionalities. Each task was performed by test users to evaluate the system's ease of use, responsiveness, and correctness of output under realistic operating conditions.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Usability Testing Results Summary}
+  {\small
+  \begin{tabular}{|p{6.66cm}|p{8.00cm}|}
+    \hline
+    \textbf{Task} & \textbf{Result} \\
+    \hline
+    Register, verify email, and log in & Completed without assistance \\
+    Add a MikroTik router and view live status & Completed; router status reflected within polling interval \\
+    View traffic analytics and router logs & Completed; data populated via the NetFlow and Syslog workers \\
+    \hline
+  \end{tabular}
+  }
+\end{table}
+
+% ============================================================
+%  CHAPTER 6
+% ============================================================
+\chapter{CHAPTER 6: CONCLUSION AND RECOMMENDATIONS}
+
+\section{6.1 Conclusion}
+
+This project successfully demonstrates the development of a secure, automated, and efficient system for managing MikroTik routers located behind Carrier-Grade NAT (CGNAT). By leveraging Rust for the backend, the system benefits from high performance, memory safety, and concurrency, making it reliable for managing multiple routers simultaneously.
+
+Through the integration of RouterOS API and WireGuard VPN, the project overcomes traditional CGNAT limitations, enabling remote access, configuration, and monitoring of routers without relying on public IPs or third-party vendor services. The system automates peer creation, establishes secure tunnels, and provides a monitoring mechanism to track tunnel status and connectivity in real time.
+
+Testing and evaluation confirmed that the system is capable of:
+
+\begin{enumerate}
+  \item Automating RouterOS configurations remotely.
+  \item Maintaining reliable WireGuard tunnels across NAT restrictions.
+  \item Handling reconnection and monitoring for uptime assurance.
+\end{enumerate}
+
+The project achieves its main objectives: providing a vendor-independent, secure, and programmable solution for remote router management and bridging the gap left by existing solutions like MikroTik's Back-To-Home. The methodology, tools, and implementation provide a robust foundation for further enhancements, such as adding a full web-based admin interface, multi-router orchestration, or scaling for enterprise deployments.
+
+This project demonstrates that combining Rust, RouterOS automation, and WireGuard VPN offers a practical and efficient solution for modern network management challenges, particularly in regions where CGNAT is common.
+
+% ============================================================
+%  REFERENCES
+% ============================================================
+\clearpage
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+
+\begin{enumerate}
+
+\item Al-Ani, A. A., \& Othman, M. (2020). A review of Carrier Grade Network Address Translation (CGNAT) and its security implications. \textit{International Journal of Computer Networks \& Communications (IJCNC), 12}(5), 45--56.
+
+\item Ashraf, M., \& Latif, S. (2020). Security considerations in automated network configuration systems. \textit{Journal of Network and Computer Applications, 158}(4), 102--118. \url{https://doi.org/10.1016/j.jnca.2020.102118}
+
+\item AWS Documentation. (2023). \textit{Deploying WireGuard on EC2 for remote access}. Amazon Web Services. Retrieved from \url{https://docs.aws.amazon.com/}
+
+\item Cloudflare. (2022). \textit{What is Carrier-Grade NAT (CGNAT)?} Retrieved from \url{https://www.cloudflare.com/learning/network-layer/what-is-cgnat/}
+
+\item Davidson, J., Kim, S., \& Clarke, A. (2021). Performance and memory safety comparison of modern systems languages: Rust, Go, and C++. \textit{Software: Practice \& Experience, 51}(7), 1523--1541. \url{https://doi.org/10.1002/spe.2973}
+
+\item DigitalOcean. (2023). \textit{How to set up WireGuard on Ubuntu}. Retrieved from \url{https://www.digitalocean.com/community/tutorials/how-to-set-up-wireguard-on-ubuntu}
+
+\item Donenfeld, J. (2018). WireGuard: Next generation kernel network tunnel. \textit{WireGuard Whitepaper}.
+
+\item Donenfeld, J. (2020). WireGuard: Next generation secure network tunnel. Retrieved from \url{https://www.wireguard.com/papers/wireguard.pdf}
+
+\item Fielding, R. T. (2000). \textit{Architectural styles and the design of network-based software architectures} (Doctoral dissertation). University of California, Irvine.
+
+\item Gong, X., Li, J., \& Xu, Y. (2018). Lightweight protocols for resource-constrained network devices. \textit{IEEE Internet of Things Journal, 5}(6), 4309--4320. \url{https://doi.org/10.1109/JIOT.2018.2865179}
+
+\item Herzberg, G., Patel, R., \& Khanna, R. (2022). NAT traversal challenges in modern mobile networks: A measurement study. \textit{Computer Networks, 204}, 108--123. \url{https://doi.org/10.1016/j.comnet.2021.108123}
+
+\item Klabnik, S., \& Nichols, C. (2018). \textit{The Rust programming language}. No Starch Press.
+
+\item Kumar, S., \& Singh, R. (2021). VPN technologies: A comparative analysis of IPSec, OpenVPN, and WireGuard. \textit{Journal of Network and Computer Applications, 188}, 103081. \url{https://doi.org/10.1016/j.jnca.2021.103081}
+
+\item Kurose, J. F., \& Ross, K. W. (2021). \textit{Computer networking: A top-down approach} (8th ed.). Pearson.
+
+\item Mason, L. (2020). Practical WireGuard deployment patterns on IPv4-only networks. \textit{Network Engineering Blog}.
+
+\item MikroTik. (2022). \textit{RouterOS REST API documentation}. MikroTik Documentation Portal. Retrieved from \url{https://help.mikrotik.com/}
+
+\item MikroTik. (2023). \textit{Cloud Hosted Router (CHR) and Back-To-Home documentation}. Retrieved from \url{https://mikrotik.com/}
+
+\item MikroTik. (2024). \textit{RouterOS API reference}. Retrieved from \url{https://help.mikrotik.com/docs/display/ROS/API}
+
+\item Mozilla Foundation. (2023). \textit{Why Rust? Performance, reliability, and productivity}. Retrieved from \url{https://foundation.rust-lang.org/}
+
+\item Rust Foundation. (2024). \textit{The Rust programming language documentation}. Retrieved from \url{https://doc.rust-lang.org/}
+
+\item Schmidt, M., \& Wuttke, A. (2019). Automation frameworks for distributed network device configuration. \textit{International Journal of Computer Networks \& Communications, 11}(4), 1--16.
+
+\item Sokolov, D., \& Komarov, P. (2022). Automation of MikroTik devices using RouterOS API. In \textit{2022 International Conference on Smart Technologies (IEEE SmartTech)}. IEEE.
+
+\item Wijaya, A., Prasetyo, F., \& Limantara, A. (2020). Automation of MikroTik RouterOS using programmable interfaces. \textit{Journal of Information Systems Engineering and Business Intelligence, 6}(2), 111--119. \url{https://doi.org/10.20473/jisebi.6.2.111-119}
+
+\item Wright, S., \& Samuels, J. (2021). Comparative performance evaluation of WireGuard, OpenVPN, and IPsec. \textit{Journal of Cybersecurity and Network Performance, 9}(3), 44--53.
+
+\item Sahu, S., \& Misra, R. (2020). Usability and security challenges for non-technical users in network management systems.
+
+\item Google. (2023). \textit{Android developer documentation on background services and networking}. Retrieved from \url{https://developer.android.com/}
+
+\item Huang, X., et al. (2022). Effectiveness of mobile APIs and protocols (WebSockets/MQTT) for cloud-to-LAN bridging. \textit{IEEE Transactions on Mobile Computing}.
+
+\end{enumerate}
+
+\end{document}

@@ -29,18 +29,29 @@ pub fn parse(docx_path: &Path, output_dir: &Path) -> Result<Document, DocError> 
     let cursor = Cursor::new(bytes.as_slice());
     let mut archive = ZipArchive::new(cursor)?;
 
-    // Extract media files first.
-    extract_media(&mut archive, output_dir)?;
+    // Extract + auto-convert media files.  Returns a map of any files that were
+    // renamed during conversion (e.g. `media/image6.emf` → `media/image6.png`).
+    let rename_map = extract_media(&mut archive, output_dir)?;
 
     // Read relationships for resolving images.
-    let rel_map = read_relationships(&mut archive);
+    let mut rel_map = read_relationships(&mut archive);
+
+    // Patch relationship paths that were renamed during image conversion.
+    for val in rel_map.values_mut() {
+        if let Some(new_path) = rename_map.get(val.as_str()) {
+            *val = new_path.clone();
+        }
+    }
 
     // Read styles (best-effort — errors are non-fatal).
     let style_map = read_styles(&mut archive).unwrap_or_default();
 
+    // Read numbering (best-effort — documents without lists may omit this file).
+    let num_map = read_numbering(&mut archive);
+
     // Read and parse the main document body.
     let xml = read_entry(&mut archive, "word/document.xml")?;
-    let mut doc = parse_document_xml(&xml, &style_map, &rel_map)?;
+    let mut doc = parse_document_xml(&xml, &style_map, &rel_map, &num_map)?;
 
     // Run AST normalisation passes (dedup page breaks, heading promotion, TOC
     // detection, bullet promotion).
@@ -61,11 +72,23 @@ fn read_entry(archive: &mut ZipArchive<Cursor<&[u8]>>, name: &str) -> Result<Str
     Ok(buf)
 }
 
-/// Copy `word/media/*` to `<output_dir>/media/`.
+/// Copy `word/media/*` to `<output_dir>/media/`, converting unsupported formats.
+///
+/// Conversion strategy:
+///   - **PNG / JPEG / GIF / WebP** — passed through unchanged (natively supported by pdfLaTeX)
+///   - **BMP / TIFF / TGA / ICO / PNM** — decoded + re-encoded as PNG via the pure-Rust `image` crate
+///   - **SVG / SVGZ** — rendered to PNG via `resvg` (pure Rust, no external deps)
+///   - **EMF / WMF** — converted via `magick convert` (ImageMagick 7) or `convert` (ImageMagick 6)
+///     if available; falls back to copying the original and warning if not installed
+///
+/// Returns a map `old_media_path → new_media_path` for every file that was
+/// renamed during conversion (e.g. `"media/image6.emf"` → `"media/image6.png"`).
 fn extract_media(
     archive: &mut ZipArchive<Cursor<&[u8]>>,
     output_dir: &Path,
-) -> Result<(), DocError> {
+) -> Result<HashMap<String, String>, DocError> {
+    let mut rename_map: HashMap<String, String> = HashMap::new();
+
     let media_dir = output_dir.join("media");
     let names: Vec<String> = (0..archive.len())
         .filter_map(|i| {
@@ -77,7 +100,7 @@ fn extract_media(
         .collect();
 
     if names.is_empty() {
-        return Ok(());
+        return Ok(rename_map);
     }
     std::fs::create_dir_all(&media_dir)?;
 
@@ -87,12 +110,263 @@ fn extract_media(
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_else(|| "unknown".to_owned());
-        let dest = media_dir.join(&file_name);
+
         let mut data = Vec::new();
         entry.read_to_end(&mut data)?;
-        std::fs::write(dest, data)?;
+
+        let ext = Path::new(&file_name)
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("")
+            .to_lowercase();
+
+        let (dest_name, dest_data) = convert_image_if_needed(&data, &file_name, &ext);
+
+        std::fs::write(media_dir.join(&dest_name), &dest_data)?;
+
+        if dest_name != file_name {
+            rename_map.insert(
+                format!("media/{file_name}"),
+                format!("media/{dest_name}"),
+            );
+        }
     }
-    Ok(())
+
+    Ok(rename_map)
+}
+
+// ── Image conversion helpers ────────────────────────────────────────────────────────
+
+/// Decide whether `data` needs to be converted and return `(dest_filename, bytes)`.
+///
+/// The returned filename may differ from `file_name` if conversion produced a
+/// PNG (e.g. `image6.emf` → `image6.png`).  On conversion failure the
+/// original bytes and original filename are returned so the file is still
+/// written to disk (the renderer's extension check will then emit a warning
+/// comment rather than a fatal `\includegraphics`).
+fn convert_image_if_needed(data: &[u8], file_name: &str, ext: &str) -> (String, Vec<u8>) {
+    // Stem used when building a `.png` replacement name
+    let stem = Path::new(file_name)
+        .file_stem()
+        .map(|s| s.to_string_lossy().into_owned())
+        .unwrap_or_else(|| "image".to_owned());
+    let png_name = format!("{stem}.png");
+
+    match ext {
+        // ─ Natively supported by pdfLaTeX ─ pass through unchanged
+        "png" | "jpg" | "jpeg" | "gif" | "pdf" | "eps" => {
+            (file_name.to_owned(), data.to_vec())
+        }
+
+        // ─ SVG: pure-Rust render via resvg
+        "svg" | "svgz" => match svg_to_png(data) {
+            Some(png) => {
+                eprintln!("  [media] {file_name} → {png_name} (SVG → PNG)");
+                (png_name, png)
+            }
+            None => {
+                eprintln!("  [media] Warning: SVG conversion failed for {file_name}, keeping original");
+                (file_name.to_owned(), data.to_vec())
+            }
+        },
+
+        // ─ Raster formats: decode + re-encode as PNG via the `image` crate
+        "bmp" | "tiff" | "tif" | "tga" | "ico" | "pnm" | "webp" => {
+            match raster_to_png(data) {
+                Some(png) => {
+                    eprintln!("  [media] {file_name} → {png_name} ({} → PNG)", ext.to_uppercase());
+                    (png_name, png)
+                }
+                None => {
+                    eprintln!("  [media] Warning: raster conversion failed for {file_name}, keeping original");
+                    (file_name.to_owned(), data.to_vec())
+                }
+            }
+        }
+
+        // ─ EMF/WMF: Windows vector formats — shell out to ImageMagick
+        "emf" | "wmf" => match emf_to_png_via_magick(data, file_name) {
+            Some(png) => {
+                eprintln!("  [media] {file_name} → {png_name} (EMF/WMF → PNG via ImageMagick)");
+                (png_name, png)
+            }
+            None => {
+                eprintln!(
+                    "  [media] Warning: could not convert {file_name} — \
+                     install ImageMagick (https://imagemagick.org) to enable EMF/WMF conversion."
+                );
+                (file_name.to_owned(), data.to_vec())
+            }
+        },
+
+        // ─ Unknown: pass through; renderer will emit a warning comment
+        _ => (file_name.to_owned(), data.to_vec()),
+    }
+}
+
+/// Render an SVG/SVGZ byte slice to a PNG using `resvg` (pure Rust, no deps).
+fn svg_to_png(data: &[u8]) -> Option<Vec<u8>> {
+    let opt = resvg::usvg::Options::default();
+    let tree = resvg::usvg::Tree::from_data(data, &opt).ok()?;
+    let size = tree.size().to_int_size();
+    let mut pixmap = resvg::tiny_skia::Pixmap::new(size.width(), size.height())?;
+    resvg::render(&tree, resvg::tiny_skia::Transform::default(), &mut pixmap.as_mut());
+    pixmap.encode_png().ok()
+}
+
+/// Decode a raster image (BMP, TIFF, TGA, ICO, …) and re-encode it as PNG
+/// using the pure-Rust `image` crate.
+fn raster_to_png(data: &[u8]) -> Option<Vec<u8>> {
+    use image::ImageReader;
+    let img = ImageReader::new(Cursor::new(data))
+        .with_guessed_format()
+        .ok()?
+        .decode()
+        .ok()?;
+    let mut out: Vec<u8> = Vec::new();
+    img.write_to(&mut Cursor::new(&mut out), image::ImageFormat::Png).ok()?;
+    Some(out)
+}
+
+/// Convert an EMF or WMF file to PNG by shelling out to ImageMagick.
+///
+/// Tries `magick convert` (ImageMagick 7) first, then `convert` (ImageMagick 6).
+/// Returns `None` if neither is available or if conversion fails.
+fn emf_to_png_via_magick(data: &[u8], file_name: &str) -> Option<Vec<u8>> {
+    let tmp_dir = std::env::temp_dir();
+    let tmp_in  = tmp_dir.join(format!("{}_{}", std::process::id(), file_name));
+    let tmp_out = tmp_in.with_extension("png");
+
+    std::fs::write(&tmp_in, data).ok()?;
+
+    // ImageMagick 7: `magick convert <in> <out>`
+    // ImageMagick 6: `convert <in> <out>`
+    let success = std::process::Command::new("magick")
+        .args(["convert", &tmp_in.to_string_lossy(), &tmp_out.to_string_lossy()])
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+        || std::process::Command::new("convert")
+            .args([&tmp_in.to_string_lossy().to_string(), &tmp_out.to_string_lossy().to_string()])
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false);
+
+    let _ = std::fs::remove_file(&tmp_in); // clean up input regardless
+
+    if success {
+        let png = std::fs::read(&tmp_out).ok();
+        let _ = std::fs::remove_file(&tmp_out);
+        png
+    } else {
+        None
+    }
+}
+
+/// Build a map from numId → is_ordered from `word/numbering.xml`.
+///
+/// The algorithm:
+///   1. First pass: abstractNumId → is_ordered (based on `w:numFmt` at ilvl 0).
+///   2. Second pass: numId → is_ordered (via abstractNumId lookup).
+///
+/// Returns an empty map if the file is absent (document has no lists).
+fn read_numbering(archive: &mut ZipArchive<Cursor<&[u8]>>) -> HashMap<u32, bool> {
+    const ORDERED_FMTS: &[&str] = &[
+        "decimal", "lowerLetter", "upperLetter", "lowerRoman", "upperRoman",
+        "ordinal", "cardinalText", "ordinalText", "decimalZero",
+    ];
+
+    let xml = match archive.by_name("word/numbering.xml") {
+        Ok(mut e) => {
+            let mut s = String::new();
+            if e.read_to_string(&mut s).is_err() { return HashMap::new(); }
+            s
+        }
+        Err(_) => return HashMap::new(),
+    };
+
+    let mut abstract_fmt: HashMap<u32, bool> = HashMap::new();
+    let mut num_to_abstract: HashMap<u32, u32>  = HashMap::new();
+
+    let mut reader = Reader::from_str(&xml);
+    reader.config_mut().trim_text(true);
+
+    let mut current_abstract_id: Option<u32> = None;
+    let mut current_num_id: Option<u32>       = None;
+    let mut in_lvl0 = false;
+
+    loop {
+        match reader.read_event() {
+            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
+                match local_name(&e.name()).as_str() {
+                    "abstractNum" => {
+                        current_abstract_id = None;
+                        for attr in e.attributes().flatten() {
+                            if local_name(&attr.key) == "abstractNumId" {
+                                if let Ok(n) = String::from_utf8_lossy(&attr.value).parse::<u32>() {
+                                    current_abstract_id = Some(n);
+                                }
+                            }
+                        }
+                    }
+                    "lvl" => {
+                        in_lvl0 = e.attributes().flatten().any(|a| {
+                            local_name(&a.key) == "ilvl"
+                                && a.value.as_ref() == b"0"
+                        });
+                    }
+                    "numFmt" if in_lvl0 => {
+                        if let Some(abs_id) = current_abstract_id {
+                            for attr in e.attributes().flatten() {
+                                if local_name(&attr.key) == "val" {
+                                    let fmt = String::from_utf8_lossy(&attr.value).to_lowercase();
+                                    let ordered = ORDERED_FMTS.iter().any(|&f| fmt == f);
+                                    abstract_fmt.entry(abs_id).or_insert(ordered);
+                                }
+                            }
+                        }
+                    }
+                    "num" => {
+                        current_num_id = None;
+                        for attr in e.attributes().flatten() {
+                            if local_name(&attr.key) == "numId" {
+                                if let Ok(n) = String::from_utf8_lossy(&attr.value).parse::<u32>() {
+                                    current_num_id = Some(n);
+                                }
+                            }
+                        }
+                    }
+                    "abstractNumId" => {
+                        if let Some(num_id) = current_num_id {
+                            for attr in e.attributes().flatten() {
+                                if local_name(&attr.key) == "val" {
+                                    if let Ok(abs) = String::from_utf8_lossy(&attr.value).parse::<u32>() {
+                                        num_to_abstract.insert(num_id, abs);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::End(e)) => {
+                if local_name(&e.name()) == "lvl" {
+                    in_lvl0 = false;
+                }
+            }
+            Ok(Event::Eof) | Err(_) => break,
+            _ => {}
+        }
+    }
+
+    num_to_abstract
+        .into_iter()
+        .map(|(num_id, abs_id)| {
+            let ordered = *abstract_fmt.get(&abs_id).unwrap_or(&false);
+            (num_id, ordered)
+        })
+        .collect()
 }
 
 /// Build a map from style ID → style name from `word/styles.xml`.
@@ -155,6 +429,7 @@ fn parse_document_xml(
     xml: &str,
     style_map: &HashMap<String, String>,
     rel_map: &HashMap<String, String>,
+    num_map: &HashMap<u32, bool>,
 ) -> Result<Document, DocError> {
     let mut doc = Document::default();
     let mut reader = Reader::from_str(xml);
@@ -169,12 +444,14 @@ fn parse_document_xml(
 
     // List tracking
     let mut para_has_numpr = false;
-    let list_ordered = false;
+    let mut list_ordered = false;
     let mut list_level: u8 = 0;
-    let mut list_items: Vec<Vec<Run>> = Vec::new();
+    let mut list_items: Vec<(u8, Vec<Run>)> = Vec::new();
+    let mut active_numid: Option<u32> = None;
+    let mut last_flushed_numid: Option<u32> = None;
 
     // Table tracking
-    let mut _in_table = false;
+    let mut in_table = false;
     let mut table_rows: Vec<Vec<Cell>> = Vec::new();
     let mut current_row: Vec<Cell> = Vec::new();
     let mut current_cell_runs: Vec<Run> = Vec::new();
@@ -185,8 +462,8 @@ fn parse_document_xml(
     let mut in_run = false;
     let mut in_text = false;
 
-    // Relationship tracking (for hyperlinks — simplified)
-    let mut _in_hyperlink = false;
+    // Relationship tracking (for hyperlinks)
+    // hyperlink_url.is_some() serves as the "currently inside <w:hyperlink>" sentinel.
     let mut hyperlink_url: Option<String> = None;
 
     // Image tracking
@@ -201,7 +478,7 @@ fn parse_document_xml(
                 match local.as_str() {
                     // ── Table ──────────────────────────────────────────────
                     "tbl" => {
-                        _in_table = true;
+                        in_table = true;
                         table_rows.clear();
                     }
                     "tr" => {
@@ -241,6 +518,16 @@ fn parse_document_xml(
                                 && let Ok(n) = String::from_utf8_lossy(&attr.value).parse::<u8>() {
                                     list_level = n;
                                 }
+                        }
+                    }
+                    "numId" => {
+                        for attr in e.attributes().flatten() {
+                            if local_name(&attr.key) == "val" {
+                                if let Ok(n) = String::from_utf8_lossy(&attr.value).parse::<u32>() {
+                                    active_numid = Some(n);
+                                    list_ordered = *num_map.get(&n).unwrap_or(&false);
+                                }
+                            }
                         }
                     }
                     // ── Run ────────────────────────────────────────────────
@@ -297,9 +584,6 @@ fn parse_document_xml(
                     }
                     // ── Hyperlink ──────────────────────────────────────────
                     "hyperlink" => {
-                        _in_hyperlink = true;
-                        // The URL lives in a relationship — store placeholder;
-                        // a full implementation would pre-read word/_rels/.
                         for attr in e.attributes().flatten() {
                             if local_name(&attr.key) == "id" {
                                 let rid = String::from_utf8_lossy(&attr.value).into_owned();
@@ -317,49 +601,9 @@ fn parse_document_xml(
                         in_drawing = true;
                         current_drawing = ImageData::default();
                     }
-                    "extent" => {
-                        if in_drawing {
-                            for attr in e.attributes().flatten() {
-                                if local_name(&attr.key) == "cx"
-                                    && let Ok(emu) = String::from_utf8_lossy(&attr.value).parse::<u64>() {
-                                        current_drawing.width_cm = Some(emu_to_cm(emu));
-                                    }
-                            }
-                        }
+                    _ => {
+                        handle_drawing_attrs(&local, &e, in_drawing, &mut current_drawing, rel_map);
                     }
-                    "docPr" => {
-                        if in_drawing {
-                            let mut descr = None::<String>;
-                            let mut title = None::<String>;
-                            let mut name = None::<String>;
-                            for attr in e.attributes().flatten() {
-                                match local_name(&attr.key).as_str() {
-                                    "descr" => descr = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    "title" => title = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    "name" => name = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    _ => {}
-                                }
-                            }
-                            current_drawing.caption = descr
-                                .filter(|s| !s.is_empty())
-                                .or_else(|| title.filter(|s| !s.is_empty()))
-                                .or_else(|| name.filter(|s| !s.is_empty()));
-                        }
-                    }
-                    "blip"
-                        if in_drawing => {
-                            for attr in e.attributes().flatten() {
-                                if local_name(&attr.key) == "embed" {
-                                    let rid = String::from_utf8_lossy(&attr.value).into_owned();
-                                    let path = rel_map
-                                        .get(&rid)
-                                        .cloned()
-                                        .unwrap_or_else(|| format!("media/{rid}")); // graceful fallback
-                                    current_drawing.path = Some(path);
-                                }
-                            }
-                        }
-                    _ => {}
                 }
             }
 
@@ -368,10 +612,16 @@ fn parse_document_xml(
                 match local.as_str() {
                     "br" => {
                         // Page break or line break
+                        let mut is_page = false;
                         for attr in e.attributes().flatten() {
                             if local_name(&attr.key) == "type" && &*String::from_utf8_lossy(&attr.value) == "page" {
-                                elements.push(Element::PageBreak);
+                                is_page = true;
                             }
+                        }
+                        if is_page {
+                            elements.push(Element::PageBreak);
+                        } else if in_run {
+                            current_run.text.push(' ');
                         }
                     }
                     "tab" => {
@@ -394,49 +644,9 @@ fn parse_document_xml(
                             current_run.underline = is_truthy(&e);
                         }
                     }
-                    "extent" => {
-                        if in_drawing {
-                            for attr in e.attributes().flatten() {
-                                if local_name(&attr.key) == "cx"
-                                    && let Ok(emu) = String::from_utf8_lossy(&attr.value).parse::<u64>() {
-                                        current_drawing.width_cm = Some(emu_to_cm(emu));
-                                    }
-                            }
-                        }
+                    _ => {
+                        handle_drawing_attrs(&local, &e, in_drawing, &mut current_drawing, rel_map);
                     }
-                    "docPr" => {
-                        if in_drawing {
-                            let mut descr = None::<String>;
-                            let mut title = None::<String>;
-                            let mut name = None::<String>;
-                            for attr in e.attributes().flatten() {
-                                match local_name(&attr.key).as_str() {
-                                    "descr" => descr = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    "title" => title = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    "name" => name = Some(String::from_utf8_lossy(&attr.value).into_owned()),
-                                    _ => {}
-                                }
-                            }
-                            current_drawing.caption = descr
-                                .filter(|s| !s.is_empty())
-                                .or_else(|| title.filter(|s| !s.is_empty()))
-                                .or_else(|| name.filter(|s| !s.is_empty()));
-                        }
-                    }
-                    "blip"
-                        if in_drawing => {
-                            for attr in e.attributes().flatten() {
-                                if local_name(&attr.key) == "embed" {
-                                    let rid = String::from_utf8_lossy(&attr.value).into_owned();
-                                    let path = rel_map
-                                        .get(&rid)
-                                        .cloned()
-                                        .unwrap_or_else(|| format!("media/{rid}")); // graceful fallback
-                                    current_drawing.path = Some(path);
-                                }
-                            }
-                        }
-                    _ => {}
                 }
             }
 
@@ -461,7 +671,7 @@ fn parse_document_xml(
                             let run = current_run.clone();
                             if in_cell {
                                 current_cell_runs.push(run);
-                            } else {
+                            } else if !in_table {
                                 para_runs.push(run);
                             }
                         }
@@ -469,7 +679,6 @@ fn parse_document_xml(
                     }
                     // ── Finish hyperlink ───────────────────────────────────
                     "hyperlink" => {
-                        _in_hyperlink = false;
                         hyperlink_url = None;
                     }
                     // ── Finish cell ────────────────────────────────────────
@@ -487,10 +696,11 @@ fn parse_document_xml(
                     }
                     // ── Finish table ───────────────────────────────────────
                     "tbl" => {
-                        _in_table = false;
+                        in_table = false;
                         if !table_rows.is_empty() {
                             elements.push(Element::Table {
                                 rows: std::mem::take(&mut table_rows),
+                                caption: None, // folded in by normalizer::fold_captions
                             });
                         }
                     }
@@ -529,15 +739,16 @@ fn parse_document_xml(
 
                         // If it's a heading, it breaks any list.
                         // If it's NOT a heading, and it DOES NOT have numPr, it breaks any list.
+                        // A change in numId also starts a fresh list (different list definition).
                         let is_list_item = para_has_numpr && heading_level.is_none();
 
-                        if !is_list_item && !list_items.is_empty() {
-                            flush_list(
-                                &mut elements,
-                                &mut list_items,
-                                list_ordered,
-                                list_level,
-                            );
+                        let numid_changed = is_list_item
+                            && !list_items.is_empty()
+                            && active_numid != last_flushed_numid;
+
+                        if (!is_list_item || numid_changed) && !list_items.is_empty() {
+                            flush_list(&mut elements, &mut list_items, list_ordered);
+                            last_flushed_numid = active_numid;
                         }
 
                         if let Some(level) = heading_level {
@@ -551,7 +762,7 @@ fn parse_document_xml(
                             }
                             elements.push(Element::Heading { level, runs });
                         } else if is_list_item {
-                            list_items.push(runs);
+                            list_items.push((list_level, runs));
                         } else if in_cell {
                             if !runs.is_empty() {
                                 if !current_cell_runs.is_empty() {
@@ -561,11 +772,11 @@ fn parse_document_xml(
                             }
                         } else {
                             if !runs.is_empty() || !elements.is_empty() {
-                                let mut text_str: String = runs.iter().map(|r| r.text.as_str()).collect();
+                                let text_str: String = runs.iter().map(|r| r.text.as_str()).collect();
                                 let upper = text_str.trim().to_uppercase();
                                 if doc.title.is_none() && upper.starts_with("TITLE:") {
                                     // Extract title and do not emit as paragraph
-                                    let mut title_text = text_str.trim()[6..].trim().to_string();
+                                    let title_text = text_str.trim()[6..].trim().to_string();
                                     if !title_text.is_empty() {
                                         doc.title = Some(title_text);
                                     }
@@ -593,7 +804,7 @@ fn parse_document_xml(
 
     // Flush any trailing list
     if !list_items.is_empty() {
-        flush_list(&mut elements, &mut list_items, list_ordered, list_level);
+        flush_list(&mut elements, &mut list_items, list_ordered);
     }
 
     doc.elements = elements;
@@ -633,14 +844,12 @@ fn is_truthy(e: &quick_xml::events::BytesStart) -> bool {
 /// Flush accumulated list items into an `Element::List` and reset the buffer.
 fn flush_list(
     elements: &mut Vec<Element>,
-    items: &mut Vec<Vec<Run>>,
+    items: &mut Vec<(u8, Vec<Run>)>,
     ordered: bool,
-    level: u8,
 ) {
     if !items.is_empty() {
         elements.push(Element::List {
             ordered,
-            level,
             items: std::mem::take(items),
         });
     }
@@ -679,6 +888,61 @@ fn normalize_media_target(target: &str) -> String {
         t.to_owned()
     } else {
         format!("media/{t}")
+    }
+}
+
+/// Process drawing-related XML attributes (`extent`, `docPr`, `blip`) that appear
+/// identically in both `Event::Start` and `Event::Empty` events.
+fn handle_drawing_attrs(
+    local: &str,
+    e: &quick_xml::events::BytesStart<'_>,
+    in_drawing: bool,
+    drawing: &mut ImageData,
+    rel_map: &HashMap<String, String>,
+) {
+    if !in_drawing {
+        return;
+    }
+    match local {
+        "extent" => {
+            for attr in e.attributes().flatten() {
+                if local_name(&attr.key) == "cx" {
+                    if let Ok(emu) = String::from_utf8_lossy(&attr.value).parse::<u64>() {
+                        drawing.width_cm = Some(emu_to_cm(emu));
+                    }
+                }
+            }
+        }
+        "docPr" => {
+            let mut descr = None::<String>;
+            let mut title = None::<String>;
+            let mut name  = None::<String>;
+            for attr in e.attributes().flatten() {
+                match local_name(&attr.key).as_str() {
+                    "descr" => descr = Some(String::from_utf8_lossy(&attr.value).into_owned()),
+                    "title" => title = Some(String::from_utf8_lossy(&attr.value).into_owned()),
+                    "name"  => name  = Some(String::from_utf8_lossy(&attr.value).into_owned()),
+                    _ => {}
+                }
+            }
+            drawing.caption = descr
+                .filter(|s| !s.is_empty())
+                .or_else(|| title.filter(|s| !s.is_empty()))
+                .or_else(|| name.filter(|s| !s.is_empty()));
+        }
+        "blip" => {
+            for attr in e.attributes().flatten() {
+                if local_name(&attr.key) == "embed" {
+                    let rid  = String::from_utf8_lossy(&attr.value).into_owned();
+                    let path = rel_map
+                        .get(&rid)
+                        .cloned()
+                        .unwrap_or_else(|| format!("media/{rid}"));
+                    drawing.path = Some(path);
+                }
+            }
+        }
+        _ => {}
     }
 }
 
